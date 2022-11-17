@@ -4,7 +4,9 @@
   "description": "This repository follows The Odin Project curriculum",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest --watchAll --verbose",
+    "build": "webpack --config webpack.prod.js",
+    "start": "webpack serve --open --config webpack.dev.js"
   },
   "repository": {
     "type": "git",
@@ -18,7 +20,10 @@
   },
   "homepage": "https://github.com/renekris/battleship#readme",
   "devDependencies": {
+    "@babel/core": "^7.20.2",
+    "@babel/preset-env": "^7.20.2",
     "@types/jest": "^29.2.3",
+    "babel-jest": "^29.3.1",
     "css-loader": "^6.7.2",
     "eslint": "^8.27.0",
     "eslint-config-airbnb-base": "^15.0.0",

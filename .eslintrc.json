@@ -9,5 +9,8 @@
     "ecmaVersion": "latest",
     "sourceType": "module"
   },
-  "rules": {}
+  "rules": {
+    "no-undef": 0,
+    "import/no-named-default": 0
+  }
 }
