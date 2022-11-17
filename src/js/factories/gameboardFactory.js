@@ -4,7 +4,7 @@ function gameBoardFactory(width = 10, height = 10) {
   const board = new Map();
   for (let x = 0; x < width; x += 1) {
     for (let y = 0; y < height; y += 1) {
-      board.set([x, y], null);
+      board.set({ x, y }, null);
     }
   }
 
@@ -32,10 +32,11 @@ function gameBoardFactory(width = 10, height = 10) {
   }
 
   const ships = [];
+  const locationsShot = new Set();
 
   return {
     board,
-    placeShip: (shipType, coords = [[0, 0], [0, 1]]) => {
+    placeShip: (shipType, coords = [{ x: 0, y: 0 }, { x: 0, y: 1 }]) => {
       if (coords.length > shipTypes[shipType].length) {
         throw new Error('More coords than ship\'s length');
       }
@@ -44,10 +45,36 @@ function gameBoardFactory(width = 10, height = 10) {
       const shipTiles = [];
       ships.push(newShip);
       coords.forEach(coord => {
-        board.set(coord, newShip);
+        board.forEach((value, key) => {
+          if (key.x === coord.x && key.y === coord.y) {
+            board.set(key, newShip);
+          }
+        });
         shipTiles.push(board.get(coord));
       });
+
       return shipTiles;
+    },
+    receiveAttack: (coord = { x: 0, y: 0 }) => {
+      if (locationsShot.has(JSON.stringify(coord))) {
+        return false;
+      }
+
+      let target;
+      board.forEach((value, key) => {
+        if (key.x === coord.x && key.y === coord.y) {
+          target = value;
+        }
+      });
+
+      if (target !== null) {
+        if (!target.isSunk()) {
+          target.hit();
+          locationsShot.add(JSON.stringify(coord));
+          return true;
+        }
+      }
+      return locationsShot;
     }
   }
 }
