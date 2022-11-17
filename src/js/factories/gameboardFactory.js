@@ -75,6 +75,22 @@ function gameBoardFactory(width = 10, height = 10) {
         }
       }
       return locationsShot;
+    },
+    areShipsSunk: () => {
+      let shipTileCount = 0;
+      let shipSinkTileCount = 0;
+      board.forEach((ship) => {
+        if (ship !== null) {
+          shipTileCount += 1;
+          if (ship.isSunk()) {
+            shipSinkTileCount += 1;
+          }
+        }
+      });
+      if (shipTileCount > 0 && shipSinkTileCount > 0 && shipSinkTileCount >= shipTileCount) {
+        return true;
+      }
+      return false;
     }
   }
 }
