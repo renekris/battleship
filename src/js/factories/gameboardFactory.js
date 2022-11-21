@@ -1,13 +1,7 @@
 import shipFactory from "./shipFactory";
 
-function gameBoardFactory(width = 10, height = 10) {
+function gameBoardFactory(width = 2, height = 2) {
   const board = new Map();
-  for (let x = 0; x < width; x += 1) {
-    for (let y = 0; y < height; y += 1) {
-      board.set({ x, y }, null);
-    }
-  }
-
   const shipTypes = {
     'carrier': {
       name: 'carrier',
@@ -30,16 +24,58 @@ function gameBoardFactory(width = 10, height = 10) {
       length: 2
     },
   }
-
   const ships = [];
-  const locationsShot = new Set();
+  const receivedShots = new Set();
+  // undamagedTiles is the inverse of receivedShots
+  const undamagedTiles = new Set();
 
-  function boardFind({ x, y } = coord, callback = null) {
+  (function init() {
+    for (let x = 0; x < width; x += 1) {
+      for (let y = 0; y < height; y += 1) {
+        board.set({ x, y }, null);
+      }
+    }
+    board.forEach((value, key) => {
+      // eslint-disable-next-line no-use-before-define
+      if (!setHas(receivedShots, key)) {
+        undamagedTiles.add(key);
+      }
+    });
+  })();
+
+  function boardFind({ x, y }, callback = null) {
     board.forEach((value, key) => {
       if (key.x === x && key.y === y) {
         callback(value, key);
       }
     });
+  }
+
+  function getRandomInclusive(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
+  function setHas(set, { x, y }) {
+    let result = false;
+    set.forEach(value => {
+      if (value.x === x && value.y === y) {
+        result = true;
+      }
+    });
+    return result;
+  }
+
+  function boardUndamagedRandom() {
+    const randomIndex = getRandomInclusive(0, undamagedTiles.size - 1);
+    let randomUndamagedTile = null;
+    let count = 0;
+    undamagedTiles.forEach(value => {
+      if (count === randomIndex) {
+        randomUndamagedTile = value;
+      }
+      count += 1;
+    });
+    return randomUndamagedTile;
   }
 
   function tileType(x, y) {
@@ -54,18 +90,8 @@ function gameBoardFactory(width = 10, height = 10) {
     return result;
   }
 
-  function setHas(set, { x, y } = coord) {
-    let result = false;
-    set.forEach(value => {
-      if (value.x === x && value.y === y) {
-        result = true;
-      }
-    });
-    return result;
-  }
-
   function canAttack(coord) {
-    if (setHas(locationsShot, coord)) {
+    if (setHas(receivedShots, coord)) {
       return false;
     }
     return true;
@@ -94,7 +120,8 @@ function gameBoardFactory(width = 10, height = 10) {
       return false;
     }
 
-    locationsShot.add(coord);
+    receivedShots.add(coord);
+    undamagedTiles.delete(coord);
     let target;
     boardFind(coord, (value) => {
       target = value;
@@ -105,7 +132,7 @@ function gameBoardFactory(width = 10, height = 10) {
         return true;
       }
     }
-    return locationsShot;
+    return receivedShots;
   }
 
   function areShipsSunk() {
@@ -127,7 +154,8 @@ function gameBoardFactory(width = 10, height = 10) {
 
   return {
     board,
-    locationsShot,
+    receivedShots,
+    boardUndamagedRandom,
     canAttack,
     tileType,
     placeShip,

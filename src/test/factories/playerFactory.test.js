@@ -12,9 +12,12 @@ describe('Player factory', () => {
 
   it('attackEnemy()', () => {
     player.playerBoard.placeShip('destroyer', [{ 'x': 0, 'y': 0 }, { 'x': 1, 'y': 0 }]);
-
+    computer.playerBoard.placeShip('destroyer', [{ 'x': 2, 'y': 5 }, { 'x': 2, 'y': 6 }]);
     player.attackEnemy(computer.playerBoard, { 'x': 0, 'y': 0 });
-    expect(computer.playerBoard.locationsShot).toContainEqual({ 'x': 0, 'y': 0 });
+    const randomAttack = computer.attackEnemy(player.playerBoard);
+
+    expect(computer.playerBoard.receivedShots).toContainEqual({ 'x': 0, 'y': 0 });
+    expect(player.playerBoard.receivedShots).toContainEqual(randomAttack);
   });
 
   it('username', () => {
