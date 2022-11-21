@@ -54,8 +54,18 @@ function gameBoardFactory(width = 10, height = 10) {
     return result;
   }
 
+  function setHas(set, { x, y } = coord) {
+    let result = false;
+    set.forEach(value => {
+      if (value.x === x && value.y === y) {
+        result = true;
+      }
+    });
+    return result;
+  }
+
   function canAttack(coord) {
-    if (locationsShot.has(JSON.stringify(coord))) {
+    if (setHas(locationsShot, coord)) {
       return false;
     }
     return true;
@@ -84,7 +94,7 @@ function gameBoardFactory(width = 10, height = 10) {
       return false;
     }
 
-    locationsShot.add(JSON.stringify(coord));
+    locationsShot.add(coord);
     let target;
     boardFind(coord, (value) => {
       target = value;

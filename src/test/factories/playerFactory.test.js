@@ -14,7 +14,7 @@ describe('Player factory', () => {
     player.playerBoard.placeShip('destroyer', [{ 'x': 0, 'y': 0 }, { 'x': 1, 'y': 0 }]);
 
     player.attackEnemy(computer.playerBoard, { 'x': 0, 'y': 0 });
-    expect(computer.playerBoard.locationsShot).toContainEqual(JSON.stringify({ 'x': 0, 'y': 0 }));
+    expect(computer.playerBoard.locationsShot).toContainEqual({ 'x': 0, 'y': 0 });
   });
 
   it('username', () => {
