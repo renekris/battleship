@@ -14,17 +14,19 @@ function playerFactory(username, isCpu = false) {
     return { x, y };
   }
 
+  function attackEnemy(enemyBoard, { x, y } = coord) {
+    const attackLocation = isCpu ? getRandomAttack() : { x, y };
+    enemyBoard.receiveAttack(attackLocation);
+    referenceBoard.receiveAttack(attackLocation);
+    return attackLocation;
+  }
+
   return {
     username,
     isCpu,
     playerBoard,
     referenceBoard,
-    attackEnemy: (enemyBoard, { x, y } = coord) => {
-      const attackLocation = isCpu ? getRandomAttack() : { x, y };
-      enemyBoard.receiveAttack(attackLocation);
-      referenceBoard.receiveAttack(attackLocation);
-      return attackLocation;
-    }
+    attackEnemy,
   }
 }
 

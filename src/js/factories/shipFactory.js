@@ -1,18 +1,22 @@
 function shipFactory(length) {
   let hits = 0;
 
+  function hit(amount = 1) {
+    hits += amount;
+    return hits;
+  }
+
+  function isSunk() {
+    if (hits >= length) {
+      return true;
+    }
+    return false;
+  }
+
   return {
     length,
-    hit: (amount = 1) => {
-      hits += amount;
-      return hits;
-    },
-    isSunk: () => {
-      if (hits >= length) {
-        return true;
-      }
-      return false;
-    }
+    hit,
+    isSunk,
   }
 }
 
