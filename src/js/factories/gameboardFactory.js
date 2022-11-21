@@ -34,8 +34,38 @@ function gameBoardFactory(width = 10, height = 10) {
   const ships = [];
   const locationsShot = new Set();
 
+  function boardFind({ x, y } = coord, callback = null) {
+    board.forEach((value, key) => {
+      if (key.x === x && key.y === y) {
+        callback(value, key);
+      }
+    });
+  }
+
+  function tileType(x, y) {
+    let result = null;
+    boardFind({ x, y }, (value) => {
+      if (value !== null) {
+        result = 'empty';
+      } else {
+        result = 'ship';
+      }
+    });
+    return result;
+  }
+
+  function canAttack(coord) {
+    if (locationsShot.has(JSON.stringify(coord))) {
+      return false;
+    }
+    return true;
+  }
+
   return {
     board,
+    locationsShot,
+    canAttack,
+    tileType,
     placeShip: (shipType, coords = [{ x: 0, y: 0 }, { x: 0, y: 1 }]) => {
       if (coords.length > shipTypes[shipType].length) {
         throw new Error('More coords than ship\'s length');
@@ -45,10 +75,8 @@ function gameBoardFactory(width = 10, height = 10) {
       const shipTiles = [];
       ships.push(newShip);
       coords.forEach(coord => {
-        board.forEach((value, key) => {
-          if (key.x === coord.x && key.y === coord.y) {
-            board.set(key, newShip);
-          }
+        boardFind(coord, (value, key) => {
+          board.set(key, newShip);
         });
         shipTiles.push(board.get(coord));
       });
@@ -56,21 +84,18 @@ function gameBoardFactory(width = 10, height = 10) {
       return shipTiles;
     },
     receiveAttack: (coord = { x: 0, y: 0 }) => {
-      if (locationsShot.has(JSON.stringify(coord))) {
+      if (!canAttack(coord)) {
         return false;
       }
 
+      locationsShot.add(JSON.stringify(coord));
       let target;
-      board.forEach((value, key) => {
-        if (key.x === coord.x && key.y === coord.y) {
-          target = value;
-        }
+      boardFind(coord, (value) => {
+        target = value;
       });
-
       if (target !== null) {
         if (!target.isSunk()) {
           target.hit();
-          locationsShot.add(JSON.stringify(coord));
           return true;
         }
       }
