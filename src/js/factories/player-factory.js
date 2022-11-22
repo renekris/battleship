@@ -1,4 +1,4 @@
-import gameBoardFactory from "./gameboardFactory";
+import gameBoardFactory from "./gameboard-factory";
 
 function playerFactory(username, isCpu = false) {
   const playerBoard = gameBoardFactory();

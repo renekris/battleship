@@ -1,4 +1,4 @@
-import shipFactory from "./shipFactory";
+import shipFactory from "./ship-factory";
 
 function gameBoardFactory(width = 2, height = 2) {
   const board = new Map();
