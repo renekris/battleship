@@ -1,4 +1,4 @@
-import { default as playerFactory } from '../../js/factories/playerFactory';
+import { default as playerFactory } from '../../js/factories/player-factory';
 
 describe('Player factory', () => {
   const playerName = 'Renekris';

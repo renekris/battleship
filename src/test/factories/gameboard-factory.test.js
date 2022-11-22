@@ -1,4 +1,4 @@
-import { default as gameBoardFactory } from '../../js/factories/gameboardFactory';
+import { default as gameBoardFactory } from '../../js/factories/gameboard-factory';
 
 describe('Gameboard factory', () => {
   let gameboard;

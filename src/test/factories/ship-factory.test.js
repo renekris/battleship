@@ -1,4 +1,4 @@
-import { default as shipFactory } from '../../js/factories/shipFactory';
+import { default as shipFactory } from '../../js/factories/ship-factory';
 
 describe('Ship factory function', () => {
   let ship;
