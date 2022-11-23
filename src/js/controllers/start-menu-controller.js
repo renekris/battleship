@@ -1,4 +1,5 @@
 import playerFactory from "../factories/player-factory";
+import { initShipPlacement } from "./set-ships-controller";
 
 // DOM CACHE
 const elContainer = document.getElementById('container');
@@ -13,6 +14,7 @@ function menuSubmit(e) {
   const playerTwo = playerFactory(playerTwoName, isAiToggled);
   console.log(playerOne);
   console.log(playerTwo);
+  initShipPlacement(playerOne, playerTwo);
 }
 
 function toggleAi(e, elPlayerTwo) {

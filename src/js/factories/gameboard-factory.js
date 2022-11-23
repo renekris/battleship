@@ -1,6 +1,6 @@
 import shipFactory from "./ship-factory";
 
-function gameBoardFactory(width = 2, height = 2) {
+function gameBoardFactory(width = 10, height = 10) {
   const board = new Map();
   const shipTypes = {
     'carrier': {
