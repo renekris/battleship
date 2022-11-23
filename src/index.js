@@ -1,6 +1,6 @@
 import "./index.css";
-import displayStartMenu from "./js/display-controller";
+import initDisplay from "./js/controllers/start-menu-controller";
 
 (() => {
-  displayStartMenu();
+  initDisplay();
 })();
