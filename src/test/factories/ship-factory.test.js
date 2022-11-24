@@ -3,7 +3,7 @@ import { default as shipFactory } from '../../js/factories/ship-factory';
 describe('Ship factory function', () => {
   let ship;
   beforeEach(() => {
-    ship = shipFactory(5);
+    ship = shipFactory('carrier', 5);
   });
 
   it('ship.length', () => {

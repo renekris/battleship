@@ -49,7 +49,6 @@ function isOverlappingBlacklist(currentCoords, shipOrientation, shipLength, blac
         && (currentCoords.y + (shipLength - 1)) >= blacklistSingleCoords.y
         && currentCoords.x === blacklistSingleCoords.x
       ) {
-        console.log('overlapping');
         return true;
       }
     }
@@ -121,4 +120,4 @@ function initShipPlacement(playerOne, playerTwo) {
   initGame(playerOne, playerTwo);
 }
 
-export { initShipPlacement, getRandomCoordinates };
+export { initShipPlacement, getPureRandomShipArray, shipTypes };
