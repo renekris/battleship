@@ -1,4 +1,4 @@
-import playerFactory from "../factories/player-factory";
+import initGame from "./game-controller";
 
 const shipTypes = [
   {
@@ -38,18 +38,17 @@ function isOverlappingBlacklist(currentCoords, shipOrientation, shipLength, blac
   for (let i = 0; i < blacklist.length; i += 1) {
     const blacklistCoords = blacklist[i];
     for (let j = 0; j < blacklistCoords.length; j += 1) {
-      const singleCoords = blacklistCoords[j];
+      const blacklistSingleCoords = blacklistCoords[j];
       if (
         shipOrientation === 0 // horizontal
-        && currentCoords.x < singleCoords.x
-        && (currentCoords.x + (shipLength - 1)) > singleCoords.x
-        && currentCoords.y === singleCoords.y
+        && currentCoords.x <= blacklistSingleCoords.x
+        && (currentCoords.x + (shipLength + 1)) >= blacklistSingleCoords.x
+        && currentCoords.y === blacklistSingleCoords.y
         || shipOrientation === 1 // vertical
-        && currentCoords.y < singleCoords.y
-        && (currentCoords.y + (shipLength - 1)) > singleCoords.y
-        && currentCoords.x === singleCoords.x
+        && currentCoords.y <= blacklistSingleCoords.y
+        && (currentCoords.y + (shipLength + 1)) >= blacklistSingleCoords.y
+        && currentCoords.x === blacklistSingleCoords.x
       ) {
-        console.log('New coords overlapped');
         return true;
       }
     }
@@ -105,7 +104,7 @@ function setRandomShips(playerObject) {
   }
 }
 
-function initShipPlacement(playerOne = playerFactory(), playerTwo = playerFactory()) {
+function initShipPlacement(playerOne, playerTwo) {
   // displaySetShips(playerOne);
   setRandomShips(playerOne); // temp
   if (playerTwo.isCpu) {
@@ -117,6 +116,8 @@ function initShipPlacement(playerOne = playerFactory(), playerTwo = playerFactor
 
   console.log(playerOne);
   console.log(playerTwo);
+
+  initGame(playerOne, playerTwo);
 }
 
 export { initShipPlacement, getRandomCoordinates };
