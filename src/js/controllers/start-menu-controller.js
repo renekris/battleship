@@ -69,22 +69,6 @@ function displayStartMenu() {
   elInputUsernameTwo.value = 'Sirkener';
 }
 
-function displayGrid(x, y) {
-  const elGridDiv = elContainer.appendChild(document.createElement('div'));
-  elGridDiv.classList.add('grid');
-
-  for (let i = 0; i < x; i += 1) {
-    const row = elGridDiv.appendChild(document.createElement('div'));
-    row.classList.add('row');
-    for (let j = 0; j < y; j += 1) {
-      const cell = row.appendChild(document.createElement('div'));
-      cell.classList.add('cell');
-      cell.dataset.x = i;
-      cell.dataset.y = j;
-    }
-  }
-}
-
 function initDisplay() {
   displayStartMenu();
 }

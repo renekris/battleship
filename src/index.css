@@ -135,3 +135,25 @@ body {
   height: 1rem;
   border: #000 1px solid;
 }
+
+/* SHIPS */
+
+.carrier {
+  background-color: red;
+}
+
+.battleship {
+  background-color: blueviolet;
+}
+
+.cruiser {
+  background-color: greenyellow;
+}
+
+.submarine {
+  background-color: steelblue;
+}
+
+.destroyer {
+  background-color: green;
+}
