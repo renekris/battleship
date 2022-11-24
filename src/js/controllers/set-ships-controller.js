@@ -1,7 +1,32 @@
 import playerFactory from "../factories/player-factory";
 
-function displaySetShips() {
+const shipTypes = [
+  {
+    name: 'carrier',
+    shipLength: 5
+  },
+  {
+    name: 'battleship',
+    shipLength: 4
+  },
+  {
+    name: 'cruiser',
+    shipLength: 3
+  },
+  {
+    name: 'submarine',
+    shipLength: 3
+  },
+  {
+    name: 'destroyer',
+    shipLength: 2
+  },
+];
 
+function displaySetShips() {
+  // todo:
+  // show modal with player name saying who has to place ships
+  // after user agreement, let them place ships with drag & drop
 }
 
 function getRandomInclusive(min, max) {
@@ -64,26 +89,34 @@ function getRandomCoordinates(shipLength, blacklist) {
   return coordArray;
 }
 
-function setAiShips(playerObj) {
-  const shipLengths = [5, 4, 3, 3, 2];
+function getPureRandomShipArray(ships) {
   const shipCoordinates = [];
-  for (let i = 0; i < 5; i += 1) {
-    shipCoordinates.push(getRandomCoordinates(shipLengths[i], shipCoordinates));
+  for (let i = 0; i < ships.length; i += 1) {
+    shipCoordinates.push(getRandomCoordinates(ships[i].shipLength, shipCoordinates));
   }
+  return shipCoordinates;
+}
 
-  console.log(shipCoordinates);
-
-  shipCoordinates.forEach((coords) => {
-    // playerObj.playerBoard.placeShip()
-  });
+function setRandomShips(playerObject) {
+  const coordinates = getPureRandomShipArray(shipTypes);
+  for (let i = 0; i < coordinates.length; i += 1) {
+    const shipCoordinates = coordinates[i];
+    playerObject.playerBoard.placeShip(shipTypes[i].name, shipCoordinates);
+  }
 }
 
 function initShipPlacement(playerOne = playerFactory(), playerTwo = playerFactory()) {
-  // temp
-  playerOne.playerBoard.placeShip('carrier', getRandomCoordinates(5));
-  console.log(getRandomCoordinates(5));
-  console.log(playerOne.playerBoard);
-  setAiShips(playerTwo);
+  // displaySetShips(playerOne);
+  setRandomShips(playerOne); // temp
+  if (playerTwo.isCpu) {
+    setRandomShips(playerTwo);
+  } else {
+    // displaySetShips(playerTwo);
+    setRandomShips(playerTwo); // temp
+  }
+
+  console.log(playerOne);
+  console.log(playerTwo);
 }
 
 export { initShipPlacement, getRandomCoordinates };

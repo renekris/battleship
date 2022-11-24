@@ -1,4 +1,4 @@
-function shipFactory(length) {
+function shipFactory(shipName, length) {
   let hits = 0;
 
   function hit(amount = 1) {
@@ -14,6 +14,7 @@ function shipFactory(length) {
   }
 
   return {
+    shipName,
     length,
     hit,
     isSunk,

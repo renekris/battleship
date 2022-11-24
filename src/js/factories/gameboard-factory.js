@@ -2,28 +2,6 @@ import shipFactory from "./ship-factory";
 
 function gameBoardFactory(width = 10, height = 10) {
   const board = new Map();
-  const shipTypes = {
-    'carrier': {
-      name: 'carrier',
-      length: 5
-    },
-    'battleship': {
-      name: 'battleship',
-      length: 4
-    },
-    'cruiser': {
-      name: 'cruiser',
-      length: 3
-    },
-    'submarine': {
-      name: 'submarine',
-      length: 3
-    },
-    'destroyer': {
-      name: 'destroyer',
-      length: 2
-    },
-  }
   const ships = [];
   const receivedShots = new Set();
   // undamagedTiles is the inverse of receivedShots
@@ -97,12 +75,8 @@ function gameBoardFactory(width = 10, height = 10) {
     return true;
   }
 
-  function placeShip(shipType, coords = [{ x: 0, y: 0 }, { x: 0, y: 1 }]) {
-    if (coords.length > shipTypes[shipType].length) {
-      throw new Error('More coords than ship\'s length');
-    }
-
-    const newShip = shipFactory(shipTypes[shipType].length);
+  function placeShip(shipName, coords = [{ x: 0, y: 0 }]) {
+    const newShip = shipFactory(shipName, coords.length);
     const shipTiles = [];
     ships.push(newShip);
     coords.forEach(coord => {
