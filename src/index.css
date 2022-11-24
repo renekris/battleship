@@ -93,6 +93,7 @@ body {
   align-items: center;
   width: 100%;
   margin-bottom: 0.5rem;
+  cursor: pointer;
 }
 
 .input-div > label > input {
@@ -108,6 +109,7 @@ body {
   padding: 0.5rem 0;
   transition: 0.25s;
   font-size: 1.2rem;
+  cursor: pointer;
 }
 
 .menu-form > button:focus,
