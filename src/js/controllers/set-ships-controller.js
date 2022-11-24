@@ -42,13 +42,14 @@ function isOverlappingBlacklist(currentCoords, shipOrientation, shipLength, blac
       if (
         shipOrientation === 0 // horizontal
         && currentCoords.x <= blacklistSingleCoords.x
-        && (currentCoords.x + (shipLength + 1)) >= blacklistSingleCoords.x
+        && (currentCoords.x + (shipLength - 1)) >= blacklistSingleCoords.x
         && currentCoords.y === blacklistSingleCoords.y
         || shipOrientation === 1 // vertical
         && currentCoords.y <= blacklistSingleCoords.y
-        && (currentCoords.y + (shipLength + 1)) >= blacklistSingleCoords.y
+        && (currentCoords.y + (shipLength - 1)) >= blacklistSingleCoords.y
         && currentCoords.x === blacklistSingleCoords.x
       ) {
+        console.log('overlapping');
         return true;
       }
     }
