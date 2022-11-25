@@ -8,12 +8,14 @@ describe('Player factory', () => {
   beforeEach(() => {
     player = playerFactory(playerName);
     computer = playerFactory('Computer', true);
+    player.setEnemy(computer);
+    computer.setEnemy(player);
   });
 
-  it('attackEnemy()', () => {
+  it('attackEnemy() + receivedShots', () => {
     player.playerBoard.placeShip('destroyer', [{ 'x': 0, 'y': 0 }, { 'x': 1, 'y': 0 }]);
     computer.playerBoard.placeShip('destroyer', [{ 'x': 2, 'y': 5 }, { 'x': 2, 'y': 6 }]);
-    player.attackEnemy(computer.playerBoard, { 'x': 0, 'y': 0 });
+    player.attackEnemy({ 'x': 0, 'y': 0 });
     const randomAttack = computer.attackEnemy(player.playerBoard);
 
     expect(computer.playerBoard.receivedShots).toContainEqual({ 'x': 0, 'y': 0 });

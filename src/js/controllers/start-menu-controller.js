@@ -12,15 +12,13 @@ function menuSubmit(e) {
 
   const playerOne = playerFactory(playerOneName);
   const playerTwo = playerFactory(playerTwoName, isAiToggled);
+  playerOne.setEnemy(playerTwo);
+  playerTwo.setEnemy(playerOne);
   initShipPlacement(playerOne, playerTwo);
 }
 
 function toggleAi(e, elPlayerTwo) {
-  if (e.target.checked) {
-    elPlayerTwo.disabled = true;
-  } else {
-    elPlayerTwo.disabled = false;
-  }
+  elPlayerTwo.disabled = e.target.checked;
 }
 
 function clearElementChildren(element) {

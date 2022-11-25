@@ -97,8 +97,8 @@ function gameBoardFactory(width = 10, height = 10) {
     receivedShots.add(coord);
     undamagedTiles.delete(coord);
     let target;
-    boardFind(coord, (value) => {
-      target = value;
+    boardFind(coord, (foundShip) => {
+      target = foundShip;
     });
     if (target !== null) {
       if (!target.isSunk()) {
