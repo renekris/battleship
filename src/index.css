@@ -169,11 +169,12 @@ body {
 }
 
 .cell {
-  background-color: #a8c4cc;
+  background-color: #7db1c0;
+  box-shadow: inset 2px 2px 5px 1px #a3d0dd;
   width: 100%;
   height: 100%;
   border: inherit;
-  box-shadow: inset 0 0 3px 0;
+  /* box-shadow: inset 0 0 3px 0; */
 }
 
 .cell.enabled:not(.attacked) {
@@ -181,16 +182,18 @@ body {
 }
 
 .cell.enabled:not(.attacked):hover {
-  border-color: rgb(136, 136, 136);
-  box-shadow: inset 0 0 5px 2px;
+  /* border-color: rgb(136, 136, 136); */
+  box-shadow: inset 0 0 10px 5px #c5dae0;
 }
 
-.cell.attacked {
-  border-color: red;
+.cell.attacked:not(.hit) {
+  background-color: #d39e9e;
+  box-shadow: inset 2px 2px 5px 1px #fac7c7;
 }
 
 .cell.hit {
-  background-color: green;
+  background-color: #9ed3a1;
+  box-shadow: inset 2px 2px 5px 1px #e0fac7;
 }
 
 /* SHIPS */

@@ -42,20 +42,30 @@ function setAttackedCell(element, hitStatus) {
   element.classList.remove('enabled');
 }
 
-function attackTile(e, fromPlayer) {
+function attackTile(e, fromPlayer, toPlayer) {
   const attackCoords = { x: e.target.dataset.x, y: e.target.dataset.y };
   const hitStatus = fromPlayer.attackEnemy(attackCoords);
   console.log(`x: ${attackCoords.x} y: ${attackCoords.y}`);
   setAttackedCell(e.target, hitStatus);
+
+  // add toPlayer to switch between players
+  // displayGameBoard(fromPlayer);
 }
 
-function checkAttackedLocations(board, coords, callback) {
-  board.receivedShotsMap.forEach((value, key) => {
+function isCellHit(boardObject, coords) {
+  const hitStatus = {
+    hit: false,
+    ship: null,
+  };
+  boardObject.receivedShotsMap.forEach((value, key) => {
     if (key.x === coords.x && key.y === coords.y) {
-      const hitStatus = value !== null;
-      callback(hitStatus);
+      if (value !== null) {
+        hitStatus.ship = value;
+      }
+      hitStatus.hit = true;
     }
   });
+  return hitStatus;
 }
 
 function generateGridCells(boardObject, playerObject = null) {
@@ -68,13 +78,18 @@ function generateGridCells(boardObject, playerObject = null) {
       currentRow = key.x;
       row = createRow(elGridDiv, currentRow);
     }
-
     const cell = row.appendChild(document.createElement('div'));
     cell.dataset.x = key.x;
     cell.dataset.y = key.y;
     cell.classList.add('cell');
-    checkAttackedLocations(boardObject, key, (hitStatus) => setAttackedCell(cell, hitStatus));
-    if (playerObject !== null) {
+
+    const hitStatus = isCellHit(boardObject, key);
+    if (hitStatus.ship !== null) {
+      setAttackedCell(cell, true);
+    } else if (hitStatus.hit === true) {
+      setAttackedCell(cell, false);
+    }
+    if (playerObject !== null && hitStatus.hit === false) {
       // isAttackable
       cell.classList.add('enabled');
       cell.addEventListener('click', (e) => attackTile(e, playerObject), { once: true });
