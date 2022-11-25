@@ -4,6 +4,7 @@ function gameBoardFactory(width = 10, height = 10) {
   const board = new Map();
   const ships = [];
   const receivedShots = new Set();
+  const receivedShotsMap = new Map();
   // undamagedTiles is the inverse of receivedShots
   const undamagedTiles = new Set();
 
@@ -21,9 +22,10 @@ function gameBoardFactory(width = 10, height = 10) {
     });
   })();
 
-  function boardFind({ x, y }, callback = null) {
+  function boardFind({ x, y }, callback) {
     board.forEach((value, key) => {
-      if (key.x === x && key.y === y) {
+      // eslint-disable-next-line eqeqeq
+      if (key.x == x && key.y == y) {
         callback(value, key);
       }
     });
@@ -93,20 +95,22 @@ function gameBoardFactory(width = 10, height = 10) {
     if (!canAttack(coord)) {
       return false;
     }
+    let target = null;
 
     receivedShots.add(coord);
     undamagedTiles.delete(coord);
-    let target;
-    boardFind(coord, (foundShip) => {
-      target = foundShip;
+    boardFind(coord, (value, key) => {
+      receivedShotsMap.set({ x: key.x, y: key.y }, value);
+      target = value;
     });
     if (target !== null) {
       if (!target.isSunk()) {
+        // check with hit if ship has been sunk
         target.hit();
         return true;
       }
     }
-    return receivedShots;
+    return false;
   }
 
   function areShipsSunk() {
@@ -129,6 +133,7 @@ function gameBoardFactory(width = 10, height = 10) {
   return {
     board,
     receivedShots,
+    receivedShotsMap,
     boardUndamagedRandom,
     canAttack,
     tileType,

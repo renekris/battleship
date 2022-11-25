@@ -32,24 +32,28 @@ function createRow(parentElement, currentRow) {
   return row;
 }
 
-function setAttackedCell(element) {
+function setAttackedCell(element, hitStatus) {
   element.disabled = true;
+  if (hitStatus) {
+    element.classList.add('hit');
+    console.log('hit!');
+  }
   element.classList.add('attacked');
-  cell.classList.remove('enabled');
+  element.classList.remove('enabled');
 }
 
 function attackTile(e, fromPlayer) {
   const attackCoords = { x: e.target.dataset.x, y: e.target.dataset.y };
+  const hitStatus = fromPlayer.attackEnemy(attackCoords);
   console.log(`x: ${attackCoords.x} y: ${attackCoords.y}`);
-
-  setAttackedCell(e.target);
-  fromPlayer.attackEnemy(attackCoords);
+  setAttackedCell(e.target, hitStatus);
 }
 
 function checkAttackedLocations(board, coords, callback) {
-  board.receivedShots.forEach((shot) => {
-    if (shot.x === coords.x && shot.y === coords.y) {
-      callback();
+  board.receivedShotsMap.forEach((value, key) => {
+    if (key.x === coords.x && key.y === coords.y) {
+      const hitStatus = value !== null;
+      callback(hitStatus);
     }
   });
 }
@@ -69,7 +73,7 @@ function generateGridCells(boardObject, playerObject = null) {
     cell.dataset.x = key.x;
     cell.dataset.y = key.y;
     cell.classList.add('cell');
-    checkAttackedLocations(boardObject, key, () => setAttackedCell(cell));
+    checkAttackedLocations(boardObject, key, (hitStatus) => setAttackedCell(cell, hitStatus));
     if (playerObject !== null) {
       // isAttackable
       cell.classList.add('enabled');

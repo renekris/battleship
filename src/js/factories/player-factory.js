@@ -17,8 +17,9 @@ function playerFactory(username, isCpu = false) {
 
     const attackLocation = isCpu ? getRandomAttack() : { x, y };
     referenceBoard.receiveAttack(attackLocation);
-    enemy.playerBoard.receiveAttack(attackLocation);
-    return attackLocation;
+    const hitStatus = enemy.playerBoard.receiveAttack(attackLocation);
+
+    return hitStatus;
   }
 
   function setEnemy(playerObject) {
