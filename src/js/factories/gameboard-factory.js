@@ -67,6 +67,13 @@ function gameBoardFactory(width = 10, height = 10) {
     return setHas(receivedShotsInverse, coords);
   }
 
+  function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i -= 1) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+  }
+
   function getAiMove(shipTargetCoordsArray = null) {
     if (shipTargetCoordsArray.length <= 0 || shipTargetCoordsArray === null) {
       return getNewRandomCoords();
@@ -83,6 +90,8 @@ function gameBoardFactory(width = 10, height = 10) {
           { x: x + 1, y },
           { x, y: y - 1 },
         ];
+
+        shuffleArray(relativeCoords);
 
         // eslint-disable-next-line no-loop-func
         relativeCoords.forEach((relativeCoord) => {
