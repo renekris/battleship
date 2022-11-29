@@ -31,6 +31,12 @@ function gameBoardFactory(width = 10, height = 10) {
     });
   }
 
+  function boardSetShipObject({ x, y }, shipObject) {
+    boardFind({ x, y }, (value, key) => {
+      board.set(key, shipObject);
+    });
+  }
+
   function getRandomInclusive(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
   }
@@ -58,9 +64,9 @@ function gameBoardFactory(width = 10, height = 10) {
     return randomUndamagedTile;
   }
 
-  function tileType(x, y) {
+  function tileType(coords) {
     let result = null;
-    boardFind({ x, y }, (value) => {
+    boardFind(coords, (value) => {
       if (value !== null) {
         result = 'empty';
       } else {
@@ -70,8 +76,8 @@ function gameBoardFactory(width = 10, height = 10) {
     return result;
   }
 
-  function canAttack(coord) {
-    if (setHas(receivedShots, coord)) {
+  function canAttack(coords) {
+    if (setHas(receivedShots, coords)) {
       return false;
     }
     return true;
@@ -91,26 +97,34 @@ function gameBoardFactory(width = 10, height = 10) {
     return shipTiles;
   }
 
-  function receiveAttack(coord = { x: 0, y: 0 }) {
-    if (!canAttack(coord)) {
-      return false;
-    }
-    let target = null;
-
-    receivedShots.add(coord);
-    undamagedTiles.delete(coord);
-    boardFind(coord, (value, key) => {
-      receivedShotsMap.set({ x: key.x, y: key.y }, value);
-      target = value;
-    });
-    if (target !== null) {
-      if (!target.isSunk()) {
-        // check with hit if ship has been sunk
-        target.hit();
-        return true;
+  function damageShip(shipObject) {
+    if (shipObject !== null) {
+      if (!shipObject.isSunk()) {
+        shipObject.hit();
       }
     }
-    return false;
+  }
+
+  function updateReceivedShots(coords, shipObject) {
+    receivedShots.add(coords);
+    undamagedTiles.delete(coords);
+    receivedShotsMap.set(coords, shipObject);
+  }
+
+  function receiveAttack(coords = { x: 0, y: 0 }) {
+    if (!canAttack(coords)) {
+      return null;
+    }
+    let target = null;
+    boardFind(coords, (value) => {
+      if (value !== null) {
+        target = value;
+      }
+    });
+
+    updateReceivedShots(coords, target);
+    damageShip(target);
+    return target;
   }
 
   function areShipsSunk() {
@@ -134,6 +148,7 @@ function gameBoardFactory(width = 10, height = 10) {
     board,
     receivedShots,
     receivedShotsMap,
+    boardSetShipObject,
     boardUndamagedRandom,
     canAttack,
     tileType,

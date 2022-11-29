@@ -124,11 +124,15 @@ body {
   display: grid;
   height: auto;
   width: 90%;
-  grid-template-columns: 1fr 3fr;
-  grid-template-rows: 1fr 3fr;
+  grid-template-columns: 1fr 2fr;
+  grid-template-rows: 1fr 2fr;
   min-width: 1rem;
   min-height: 1rem;
   aspect-ratio: 1;
+}
+
+.player-name {
+  color: white;
 }
 
 /* BOARDS */
@@ -142,7 +146,7 @@ body {
 }
 
 .current-player-board .cell {
-  border: rgb(221, 221, 221) 0.1vw solid;
+  border: #6c9daa 0.01vw solid;
 }
 
 .current-reference-board {
@@ -152,7 +156,7 @@ body {
 }
 
 .current-reference-board .cell {
-  border: rgb(221, 221, 221) 0.4vw solid;
+  border: #6c9daa 0.2vw solid;
 }
 
 /* GRID */
@@ -170,30 +174,29 @@ body {
 
 .cell {
   background-color: #7db1c0;
-  box-shadow: inset 2px 2px 5px 1px #a3d0dd;
+  box-shadow: inset 1px 1px 3px #a3d0dd;
   width: 100%;
   height: 100%;
   border: inherit;
   /* box-shadow: inset 0 0 3px 0; */
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 
-.cell.enabled:not(.attacked) {
+.cell.enabled:not(.shot) {
   cursor: pointer;
 }
 
-.cell.enabled:not(.attacked):hover {
-  /* border-color: rgb(136, 136, 136); */
-  box-shadow: inset 0 0 10px 5px #c5dae0;
+.cell.enabled:not(.shot):hover {
+  box-shadow: inset 0px 0px 10px 1px #c5dae0;
 }
 
-.cell.attacked:not(.hit) {
-  background-color: #d39e9e;
-  box-shadow: inset 2px 2px 5px 1px #fac7c7;
+.cell.shot:not(.hit) {
+  background-image: url(./img/svg/shot.svg);
 }
 
 .cell.hit {
-  background-color: #9ed3a1;
-  box-shadow: inset 2px 2px 5px 1px #e0fac7;
+  background-image: url(./img/svg/shot.svg), url(./img/svg/hit.svg);
 }
 
 /* SHIPS */

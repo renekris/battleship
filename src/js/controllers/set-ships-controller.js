@@ -56,7 +56,6 @@ function isOverlappingBlacklist(currentCoords, shipOrientation, shipLength, blac
   return false;
 }
 
-// implement coord blacklist to avoid overwriting
 function getRandomCoordinates(shipLength, blacklist) {
   let newCoords;
   let shipOrientation;

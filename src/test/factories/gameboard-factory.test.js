@@ -12,17 +12,11 @@ describe('Gameboard factory', () => {
     expect(gameboard.placeShip('battleship', [{ 'x': 0, 'y': 0 }, { 'x': 1, 'y': 0 }, { 'x': 2, 'y': 0 }, { 'x': 3, 'y': 0 }])).toHaveLength(4);
   });
 
-  it('gameboard.receiveAttack()', () => {
+  it('gameboard.receiveAttack() + shipObject', () => {
     gameboard.placeShip('destroyer', [{ 'x': 0, 'y': 0 }, { 'x': 1, 'y': 0 }]);
-    expect(gameboard.receiveAttack({ 'x': 0, 'y': 0 })).toBe(true);
-    expect(gameboard.receiveAttack({ 'x': 1, 'y': 0 })).toBe(true);
+    const shipObject = gameboard.receiveAttack({ 'x': 0, 'y': 0 });
+    expect(gameboard.receiveAttack({ 'x': 1, 'y': 0 })).toBe(shipObject);
   });
-
-  it('gameboard.receiveAttack() overflow', () => {
-    gameboard.placeShip('destroyer', [{ 'x': 0, 'y': 0 }, { 'x': 1, 'y': 0 }]);
-    expect(gameboard.receiveAttack({ 'x': 0, 'y': 0 })).toBe(true);
-    expect(gameboard.receiveAttack({ 'x': 0, 'y': 0 })).toBe(false);
-  })
 
   it('gameboard.areShipsSunk()', () => {
     expect(gameboard.areShipsSunk()).toBe(false);

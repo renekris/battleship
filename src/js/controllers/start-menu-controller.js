@@ -12,8 +12,6 @@ function menuSubmit(e) {
 
   const playerOne = playerFactory(playerOneName);
   const playerTwo = playerFactory(playerTwoName, isAiToggled);
-  playerOne.setEnemy(playerTwo);
-  playerTwo.setEnemy(playerOne);
   initShipPlacement(playerOne, playerTwo);
 }
 
