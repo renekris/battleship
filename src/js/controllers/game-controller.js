@@ -32,7 +32,7 @@ function attackTile(e, fromPlayer = playerFactory(), toPlayer = playerFactory())
   fromPlayer.referenceBoard.receiveAttack(attackCoords);
 
   if (toPlayer.isCpu) {
-    const randomAttack = toPlayer.getRandomAttack();
+    const randomAttack = toPlayer.referenceBoard.getAiMove();
     toPlayer.referenceBoard.receiveAttack(randomAttack);
     fromPlayer.playerBoard.receiveAttack(randomAttack);
     displayGameBoard(fromPlayer, toPlayer);
@@ -72,8 +72,8 @@ function generateGridCells(activeBoardObj, fromPlayer, toPlayer, canAttack) {
   let currentRow = 0;
   let elRow = createRow(elGridDiv, currentRow);
   activeBoardObj.board.forEach((value, coords) => {
-    if (currentRow !== coords.x) {
-      currentRow = coords.x;
+    if (currentRow !== coords.y) {
+      currentRow = coords.y;
       elRow = createRow(elGridDiv, currentRow);
     }
     const elCell = createCell(elRow, coords);

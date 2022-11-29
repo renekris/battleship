@@ -9,8 +9,8 @@ function gameBoardFactory(width = 10, height = 10) {
   const undamagedTiles = new Set();
 
   (function init() {
-    for (let x = 0; x < width; x += 1) {
-      for (let y = 0; y < height; y += 1) {
+    for (let y = 0; y < width; y += 1) {
+      for (let x = 0; x < height; x += 1) {
         board.set({ x, y }, null);
       }
     }
@@ -51,7 +51,7 @@ function gameBoardFactory(width = 10, height = 10) {
     return result;
   }
 
-  function boardUndamagedRandom() {
+  function getAiMove() {
     const randomIndex = getRandomInclusive(0, undamagedTiles.size - 1);
     let randomUndamagedTile = null;
     let count = 0;
@@ -148,8 +148,9 @@ function gameBoardFactory(width = 10, height = 10) {
     board,
     receivedShots,
     receivedShotsMap,
+    undamagedTiles,
     boardSetShipObject,
-    boardUndamagedRandom,
+    getAiMove,
     canAttack,
     tileType,
     placeShip,
