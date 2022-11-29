@@ -1,6 +1,12 @@
 :root {
   background-color: black;
   --active-color: #111;
+
+  --carrier: red;
+  --battleship: blueviolet;
+  --cruiser: greenyellow;
+  --submarine: gold;
+  --destroyer: green;
 }
 
 *,
@@ -131,6 +137,13 @@ body {
   aspect-ratio: 1;
 }
 
+@media (orientation: landscape) {
+  .game-area {
+    height: 90%;
+    width: auto;
+  }
+}
+
 .player-name {
   color: white;
 }
@@ -139,19 +152,19 @@ body {
 
 .current-player-board {
   grid-area: 1 / 1 / 2 / 2;
-  background-color: #222;
+  background-color: #00485c;
   padding: 1rem;
   opacity: 50%;
   /* filter: blur(4rem); */
 }
 
 .current-player-board .cell {
-  border: #6c9daa 0.01vw solid;
+  /* border: #6c9daa 0.01vw solid; */
 }
 
 .current-reference-board {
   grid-area: 2 / 2 / 3 / 3;
-  background-color: #666;
+  background-color: #00485c;
   padding: 1rem;
 }
 
@@ -174,13 +187,21 @@ body {
 
 .cell {
   background-color: #7db1c0;
-  box-shadow: inset 1px 1px 3px #a3d0dd;
   width: 100%;
   height: 100%;
   border: inherit;
-  /* box-shadow: inset 0 0 3px 0; */
-  background-repeat: no-repeat;
-  background-size: cover;
+  box-shadow: inset 0 0 1px 0;
+
+  -webkit-mask-position: center;
+  -webkit-mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  mask-position: center;
+  mask-size: contain;
+  mask-repeat: no-repeat;
+
+  animation-duration: 0.65s;
+  animation-iteration-count: 1;
+  animation-timing-function: ease-in-out;
 }
 
 .cell.enabled:not(.shot) {
@@ -192,31 +213,51 @@ body {
 }
 
 .cell.shot:not(.hit) {
-  background-image: url(./img/svg/shot.svg);
+  -webkit-mask-image: url(./img/svg/shot.svg);
+  mask-image: url(./img/svg/shot.svg);
 }
 
 .cell.hit {
-  background-image: url(./img/svg/shot.svg), url(./img/svg/hit.svg);
+  -webkit-mask-image: url(./img/svg/shot.svg), url(./img/svg/hit.svg);
+  mask-image: url(./img/svg/shot.svg), url(./img/svg/hit.svg);
+  animation-name: active-hit;
+}
+
+@keyframes active-hit {
+  0% {
+    background-color: #7db1c0;
+  }
+  50% {
+    background-color: #ffffff;
+  }
+  100% {
+    background-color: #7db1c0;
+  }
 }
 
 /* SHIPS */
 
-.carrier {
-  background-color: red;
+.cell.carrier {
+  background-color: var(--carrier);
+  animation-name: none;
 }
 
-.battleship {
-  background-color: blueviolet;
+.cell.battleship {
+  background-color: var(--battleship);
+  animation-name: none;
 }
 
-.cruiser {
-  background-color: greenyellow;
+.cell.cruiser {
+  background-color: var(--cruiser);
+  animation-name: none;
 }
 
-.submarine {
-  background-color: steelblue;
+.cell.submarine {
+  background-color: var(--submarine);
+  animation-name: none;
 }
 
-.destroyer {
-  background-color: green;
+.cell.destroyer {
+  background-color: var(--destroyer);
+  animation-name: none;
 }
