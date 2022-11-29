@@ -30,12 +30,6 @@ function gameBoardFactory(width = 10, height = 10) {
     });
   }
 
-  function boardSetShipObject({ x, y }, shipObject) {
-    boardFind({ x, y }, (value, key) => {
-      board.set(key, shipObject);
-    });
-  }
-
   function getRandomInclusive(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
   }
@@ -193,9 +187,7 @@ function gameBoardFactory(width = 10, height = 10) {
     receivedShots,
     receivedShotsMap,
     receivedShotsInverse,
-    boardSetShipObject,
     getAiMove,
-    canAttack,
     tileType,
     placeShip,
     receiveAttack,

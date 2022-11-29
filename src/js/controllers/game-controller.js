@@ -43,11 +43,25 @@ function aiMove(playerOne, playerAi) {
   }
 }
 
+function displayWinner(player) {
+  console.log(`The winner is ${player.username}`);
+}
+
+function checkWinCondition(playerOne, playerTwo) {
+  // with playerOne priority
+  if (playerOne.playerBoard.areShipsSunk()) {
+    displayWinner(playerTwo);
+  } else if (playerTwo.playerBoard.areShipsSunk()) {
+    displayWinner(playerOne);
+  }
+}
+
 function attackTile(e, fromPlayer = playerFactory(), toPlayer = playerFactory()) {
   const attackCoords = { x: parseInt(e.target.dataset.x, 10), y: parseInt(e.target.dataset.y, 10) };
-  console.log(attackCoords);
+  console.log(`${fromPlayer.username} ATTACK:`, attackCoords);
   toPlayer.playerBoard.receiveAttack(attackCoords);
   fromPlayer.referenceBoard.receiveAttack(attackCoords);
+
 
   if (toPlayer.isCpu) {
     aiMove(fromPlayer, toPlayer);
@@ -55,6 +69,8 @@ function attackTile(e, fromPlayer = playerFactory(), toPlayer = playerFactory())
   } else {
     displayGameBoard(toPlayer, fromPlayer);
   }
+
+  checkWinCondition(fromPlayer, toPlayer);
 }
 
 function getCoordsStatus(boardObject, coords) {
