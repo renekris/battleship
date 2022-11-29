@@ -17,6 +17,9 @@ function menuSubmit(e) {
 
 function toggleAi(e, elPlayerTwo) {
   elPlayerTwo.disabled = e.target.checked;
+  if (!elPlayerTwo.disabled) {
+    elPlayerTwo.select();
+  }
 }
 
 function clearElementChildren(element) {
@@ -41,28 +44,31 @@ function displayStartMenu() {
 
   // INPUT
   const elInputUsernameOne = elInputDiv.appendChild(document.createElement('input'));
+  elInputUsernameOne.value = 'Renekris';
   elInputUsernameOne.classList.add('username-one');
   elInputUsernameOne.placeholder = 'Player 1';
+  elInputUsernameOne.spellcheck = false;
+  elInputUsernameOne.select();
 
   const elInputUsernameTwo = elInputDiv.appendChild(document.createElement('input'));
+  elInputUsernameTwo.disabled = true;
   elInputUsernameTwo.classList.add('username-two');
   elInputUsernameTwo.placeholder = 'Player 2';
+  elInputUsernameTwo.value = 'Player 2';
+  elInputUsernameTwo.spellcheck = false;
 
   const elLabelAiToggle = elInputDiv.appendChild(document.createElement('label'));
-  elLabelAiToggle.textContent = 'AI toggle';
+  elLabelAiToggle.textContent = 'Player vs. AI';
 
   const elInputAiToggle = elLabelAiToggle.appendChild(document.createElement('input'));
   elInputAiToggle.type = 'checkbox';
+  elInputAiToggle.checked = elInputUsernameTwo.disabled;
   elInputAiToggle.addEventListener('click', (e) => toggleAi(e, elInputUsernameTwo));
 
   // SUBMIT
   const elSubmit = elForm.appendChild(document.createElement('button'));
   elSubmit.type = 'submit';
   elSubmit.textContent = 'Start';
-
-  // TEMP VALUES
-  elInputUsernameOne.value = 'Renekris';
-  elInputUsernameTwo.value = 'Sirkener';
 }
 
 function initDisplay() {
