@@ -3,6 +3,8 @@ import playerFactory from "../factories/player-factory";
 // DOM CACHE
 const elContainer = document.getElementById('container');
 
+const aiDiscoveredCoordinates = [];
+
 function clearElementChildren(element) {
   while (element.firstChild) {
     element.firstChild.remove();
@@ -25,6 +27,22 @@ function setAttackedCell(element, isTargetShip) {
   }
 }
 
+function aiMove(playerOne, playerAi) {
+  const aiAttackCoords = playerAi.referenceBoard.getAiMove(aiDiscoveredCoordinates);
+  playerAi.referenceBoard.receiveAttack(aiAttackCoords);
+  const target = playerOne.playerBoard.receiveAttack(aiAttackCoords);
+  console.log(`AI ATTACK:`, aiAttackCoords);
+
+  if (target !== null) {
+    aiDiscoveredCoordinates.push(
+      {
+        coords: aiAttackCoords,
+        isSunk: () => target.isSunk(),
+      }
+    );
+  }
+}
+
 function attackTile(e, fromPlayer = playerFactory(), toPlayer = playerFactory()) {
   const attackCoords = { x: parseInt(e.target.dataset.x, 10), y: parseInt(e.target.dataset.y, 10) };
   console.log(attackCoords);
@@ -32,9 +50,7 @@ function attackTile(e, fromPlayer = playerFactory(), toPlayer = playerFactory())
   fromPlayer.referenceBoard.receiveAttack(attackCoords);
 
   if (toPlayer.isCpu) {
-    const randomAttack = toPlayer.referenceBoard.getAiMove();
-    toPlayer.referenceBoard.receiveAttack(randomAttack);
-    fromPlayer.playerBoard.receiveAttack(randomAttack);
+    aiMove(fromPlayer, toPlayer);
     displayGameBoard(fromPlayer, toPlayer);
   } else {
     displayGameBoard(toPlayer, fromPlayer);

@@ -4,9 +4,8 @@ function gameBoardFactory(width = 10, height = 10) {
   const board = new Map();
   const ships = [];
   const receivedShots = new Set();
+  const receivedShotsInverse = new Set();
   const receivedShotsMap = new Map();
-  // undamagedTiles is the inverse of receivedShots
-  const undamagedTiles = new Set();
 
   (function init() {
     for (let y = 0; y < width; y += 1) {
@@ -17,7 +16,7 @@ function gameBoardFactory(width = 10, height = 10) {
     board.forEach((value, key) => {
       // eslint-disable-next-line no-use-before-define
       if (!setHas(receivedShots, key)) {
-        undamagedTiles.add(key);
+        receivedShotsInverse.add(key);
       }
     });
   })();
@@ -51,17 +50,49 @@ function gameBoardFactory(width = 10, height = 10) {
     return result;
   }
 
-  function getAiMove() {
-    const randomIndex = getRandomInclusive(0, undamagedTiles.size - 1);
+  function getNewRandomCoords() {
+    const randomIndex = getRandomInclusive(0, receivedShotsInverse.size - 1);
     let randomUndamagedTile = null;
     let count = 0;
-    undamagedTiles.forEach(value => {
+    receivedShotsInverse.forEach(value => {
       if (count === randomIndex) {
         randomUndamagedTile = value;
       }
       count += 1;
     });
     return randomUndamagedTile;
+  }
+
+  function isMovePossible(coords) {
+    return setHas(receivedShotsInverse, coords);
+  }
+
+  function getAiMove(shipTargetCoordsArray = null) {
+    if (shipTargetCoordsArray.length <= 0 || shipTargetCoordsArray === null) {
+      return getNewRandomCoords();
+    }
+
+    let newCoords = null;
+    for (let i = 0; i < shipTargetCoordsArray.length; i += 1) {
+      if (!shipTargetCoordsArray[i].isSunk()) {
+        const { x, y } = shipTargetCoordsArray[i].coords;
+        // all relative positions in the shape of (+) except {x: 0, y: 0}
+        const relativeCoords = [
+          { x: x - 1, y },
+          { x, y: y + 1 },
+          { x: x + 1, y },
+          { x, y: y - 1 },
+        ];
+
+        // eslint-disable-next-line no-loop-func
+        relativeCoords.forEach((relativeCoord) => {
+          if (isMovePossible(relativeCoord)) {
+            newCoords = relativeCoord;
+          }
+        });
+      }
+    }
+    return newCoords ?? getNewRandomCoords();
   }
 
   function tileType(coords) {
@@ -107,7 +138,11 @@ function gameBoardFactory(width = 10, height = 10) {
 
   function updateReceivedShots(coords, shipObject) {
     receivedShots.add(coords);
-    undamagedTiles.delete(coords);
+    receivedShotsInverse.forEach((value) => {
+      if (value.x === coords.x && value.y === coords.y) {
+        receivedShotsInverse.delete(value);
+      }
+    });
     receivedShotsMap.set(coords, shipObject);
   }
 
@@ -148,7 +183,7 @@ function gameBoardFactory(width = 10, height = 10) {
     board,
     receivedShots,
     receivedShotsMap,
-    undamagedTiles,
+    receivedShotsInverse,
     boardSetShipObject,
     getAiMove,
     canAttack,
