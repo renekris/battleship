@@ -1,4 +1,5 @@
 import playerFactory from "../factories/player-factory";
+import { displayTimedModal } from "./modal-controller";
 
 // DOM CACHE
 const elContainer = document.getElementById('container');
@@ -56,21 +57,24 @@ function checkWinCondition(playerOne, playerTwo) {
   }
 }
 
+function nextMove(fromPlayer, toPlayer) {
+  if (toPlayer.isCpu) {
+    aiMove(fromPlayer, toPlayer);
+    checkWinCondition(toPlayer, fromPlayer);
+    displayGameBoard(fromPlayer, toPlayer);
+  } else {
+    checkWinCondition(fromPlayer, toPlayer);
+    displayGameBoard(toPlayer, fromPlayer);
+  }
+}
+
 function attackTile(e, fromPlayer = playerFactory(), toPlayer = playerFactory()) {
   const attackCoords = { x: parseInt(e.target.dataset.x, 10), y: parseInt(e.target.dataset.y, 10) };
   console.log(`${fromPlayer.username} ATTACK:`, attackCoords);
   toPlayer.playerBoard.receiveAttack(attackCoords);
   fromPlayer.referenceBoard.receiveAttack(attackCoords);
 
-
-  if (toPlayer.isCpu) {
-    aiMove(fromPlayer, toPlayer);
-    displayGameBoard(fromPlayer, toPlayer);
-  } else {
-    displayGameBoard(toPlayer, fromPlayer);
-  }
-
-  checkWinCondition(fromPlayer, toPlayer);
+  nextMove(fromPlayer, toPlayer);
 }
 
 function getCoordsStatus(boardObject, coords) {
@@ -136,7 +140,11 @@ function generateGridCells(activeBoardObj, fromPlayer, toPlayer, canAttack) {
 }
 
 function displayGameBoard(fromPlayer, toPlayer) {
+  if (!toPlayer.isCpu) {
+    displayTimedModal(document.body, `Pass the device to ${fromPlayer.username}`, 3000);
+  }
   clearElementChildren(elContainer);
+
   const elGameWindow = elContainer.appendChild(document.createElement('div'));
   elGameWindow.classList.add('game-area');
 
