@@ -137,6 +137,7 @@ body {
   height: 100%;
   backdrop-filter: blur(5rem);
   background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
 }
 
 .modal {
@@ -181,11 +182,6 @@ body {
   background-color: #00485c;
   padding: 1rem;
   opacity: 50%;
-  /* filter: blur(4rem); */
-}
-
-.current-player-board .cell {
-  /* border: #6c9daa 0.01vw solid; */
 }
 
 .current-reference-board {
@@ -204,6 +200,9 @@ body {
   display: grid;
   width: 100%;
   height: 100%;
+
+  position: relative;
+  z-index: 0;
 }
 
 .row {
@@ -225,7 +224,7 @@ body {
   mask-size: contain;
   mask-repeat: no-repeat;
 
-  animation-duration: 0.65s;
+  animation-duration: 0.5s;
   animation-iteration-count: 1;
   animation-timing-function: ease-in-out;
 }
@@ -238,27 +237,108 @@ body {
   box-shadow: inset 0px 0px 10px 1px #c5dae0;
 }
 
-.cell.shot:not(.hit) {
+.cell.shot:not(.hit):not(.hit-animation) {
   -webkit-mask-image: url(./img/svg/shot.svg);
   mask-image: url(./img/svg/shot.svg);
+  /* animation-name: glow-animation; */
 }
 
-.cell.hit {
+.cell.hit:not(.hit-animation) {
   -webkit-mask-image: url(./img/svg/shot.svg), url(./img/svg/hit.svg);
   mask-image: url(./img/svg/shot.svg), url(./img/svg/hit.svg);
-  animation-name: active-hit;
+  /* animation-name: glow-animation; */
 }
 
-@keyframes active-hit {
+@keyframes glow-animation {
   0% {
     background-color: #7db1c0;
   }
-  50% {
+  10% {
     background-color: #ffffff;
   }
   100% {
     background-color: #7db1c0;
   }
+}
+
+.cell.hit-animation {
+  box-shadow: inset 0px 0px 10px 1px #c5dae0;
+  position: relative;
+
+  animation-name: hit-animation;
+  animation-duration: 0.75s;
+  animation-iteration-count: 1;
+  animation-timing-function: cubic-bezier(0.1, 0.3, 0.3, 1);
+
+  background-repeat: no-repeat;
+  background-position: center;
+  background-image: radial-gradient(
+    circle,
+    rgba(0, 0, 0, 1) 25%,
+    rgba(125, 177, 192, 1) 70%
+  );
+}
+
+@keyframes hit-animation {
+  0% {
+    background-size: 110% 110%;
+  }
+  50% {
+    background-size: 50% 50%;
+    background-image: radial-gradient(
+      circle,
+      rgba(0, 0, 0, 1) 25%,
+      rgba(125, 177, 192, 1) 70%
+    );
+  }
+  55% {
+    background-size: 75% 75%;
+    background-image: radial-gradient(
+      circle,
+      rgba(255, 255, 255, 1) 0%,
+      rgba(251, 252, 70, 1) 10%,
+      rgba(252, 161, 70, 1) 20%,
+      rgba(252, 122, 70, 1) 45%,
+      rgba(252, 128, 70, 1) 60%
+    );
+  }
+  90% {
+    background-size: 400% 400%;
+    background-image: radial-gradient(
+      circle,
+      rgba(255, 255, 255, 1) 0%,
+      rgba(251, 252, 70, 1) 10%,
+      rgba(252, 161, 70, 1) 20%,
+      rgba(252, 122, 70, 1) 45%,
+      rgba(252, 128, 70, 1) 60%
+    );
+  }
+  100% {
+    background-size: 2000% 2000%;
+    background-image: radial-gradient(
+      circle,
+      rgba(255, 255, 255, 1) 0%,
+      rgba(251, 252, 70, 1) 20%,
+      rgba(252, 161, 70, 1) 40%,
+      rgba(252, 122, 70, 1) 60%,
+      rgba(252, 128, 70, 1) 80%
+    );
+  }
+}
+
+.cell.hit-animation::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #7db1c0;
+  z-index: -1;
+}
+
+.cell.glow-animation {
+  animation-name: glow-animation;
 }
 
 /* SHIPS */

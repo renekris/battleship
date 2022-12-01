@@ -1,9 +1,11 @@
 import playerFactory from "../factories/player-factory";
-import { displayTimedModal } from "./modal-controller";
+import { displayModal } from "./modal-controller";
 
 // DOM CACHE
 const elContainer = document.getElementById('container');
 
+// VARIABLES
+const afterAttackDelay = 1300;
 const aiDiscoveredCoordinates = [];
 
 function clearElementChildren(element) {
@@ -57,7 +59,20 @@ function checkWinCondition(playerOne, playerTwo) {
   }
 }
 
-function nextMove(fromPlayer, toPlayer) {
+function updateCellAnimation(elCell, coords, toPlayer = playerFactory()) {
+  const target = toPlayer.playerBoard.boardFindValue(coords);
+  const doesShipExist = target !== null;
+  setAttackedCell(elCell, doesShipExist);
+
+
+  elCell.classList.add('hit-animation');
+  elCell.addEventListener('animationend', () => {
+    elCell.classList.remove('hit-animation');
+    elCell.classList.add('glow-animation');
+  });
+}
+
+function nextPlayerMove(fromPlayer, toPlayer) {
   if (toPlayer.isCpu) {
     aiMove(fromPlayer, toPlayer);
     checkWinCondition(toPlayer, fromPlayer);
@@ -68,13 +83,25 @@ function nextMove(fromPlayer, toPlayer) {
   }
 }
 
+function removeCellsEnabledStatus() {
+  const elActiveCells = document.querySelectorAll('.current-reference-board .cell');
+  elActiveCells.forEach((elCell) => {
+    elCell.classList.remove('enabled');
+  });
+}
+
 function attackTile(e, fromPlayer = playerFactory(), toPlayer = playerFactory()) {
+  if (!e.target.classList.contains('enabled')) return;
+  removeCellsEnabledStatus();
+
   const attackCoords = { x: parseInt(e.target.dataset.x, 10), y: parseInt(e.target.dataset.y, 10) };
   console.log(`${fromPlayer.username} ATTACK:`, attackCoords);
   toPlayer.playerBoard.receiveAttack(attackCoords);
   fromPlayer.referenceBoard.receiveAttack(attackCoords);
 
-  nextMove(fromPlayer, toPlayer);
+  updateCellAnimation(e.target, attackCoords, toPlayer);
+
+  setTimeout(() => nextPlayerMove(fromPlayer, toPlayer), afterAttackDelay);
 }
 
 function getCoordsStatus(boardObject, coords) {
@@ -141,10 +168,10 @@ function generateGridCells(activeBoardObj, fromPlayer, toPlayer, canAttack) {
 
 function displayGameBoard(fromPlayer, toPlayer) {
   if (!toPlayer.isCpu) {
-    displayTimedModal(document.body, `Pass the device to ${fromPlayer.username}`, 3000);
+    displayModal(document.body, `Pass the device to ${fromPlayer.username}`);
   }
-  clearElementChildren(elContainer);
 
+  clearElementChildren(elContainer);
   const elGameWindow = elContainer.appendChild(document.createElement('div'));
   elGameWindow.classList.add('game-area');
 

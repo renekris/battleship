@@ -16,15 +16,12 @@ function createModal(message) {
   return elModalWrapper;
 }
 
-function displayTimedModal(parentElement, message = 'Set the message for the modal', duration = 2000) {
+function displayModal(parentElement, message = 'Set the message for the modal', duration = null) {
   const elModalWrapper = parentElement.appendChild(createModal(message));
-  setTimeout(() => removeModal(elModalWrapper), duration);
-  elModalWrapper.addEventListener('click', (e) => removeModal(e.target));
+  if (duration !== null) {
+    setTimeout(() => removeModal(elModalWrapper), duration);
+  }
+  elModalWrapper.addEventListener('click', () => removeModal(elModalWrapper));
 }
 
-function displayModal(parentElement, message) {
-  const elModalWrapper = parentElement.appendChild(createModal(message));
-  elModalWrapper.addEventListener('click', (e) => removeModal(e));
-}
-
-export { displayTimedModal, displayModal };
+export { displayModal };

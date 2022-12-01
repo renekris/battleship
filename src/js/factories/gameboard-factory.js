@@ -30,6 +30,14 @@ function gameBoardFactory(width = 10, height = 10) {
     });
   }
 
+  function boardFindValue({ x, y }) {
+    let value = null;
+    boardFind({ x, y }, (foundValue) => {
+      value = foundValue;
+    });
+    return value;
+  }
+
   function getRandomInclusive(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
   }
@@ -187,6 +195,7 @@ function gameBoardFactory(width = 10, height = 10) {
     receivedShots,
     receivedShotsMap,
     receivedShotsInverse,
+    boardFindValue,
     getAiMove,
     tileType,
     placeShip,
