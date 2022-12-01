@@ -125,6 +125,49 @@ body {
   transition: 0.5s;
 }
 
+/* SET SHIPS */
+
+.set-ships-wrapper {
+  display: grid;
+  height: auto;
+  width: 90%;
+  grid-template-columns: 1fr 2fr;
+  grid-template-rows: 1fr 1fr;
+}
+
+/* SHIPS STORAGE */
+
+.ship-storage {
+  display: flex;
+  width: 100%;
+  height: auto;
+  grid-area: 1 / 1 / 3 / 2;
+}
+
+.cell-group {
+  display: grid;
+  align-content: flex-start;
+}
+
+.cell-group .cell {
+  height: auto;
+  width: 5vw;
+  aspect-ratio: 1;
+  background-color: white;
+}
+
+/* SET SHIPS GRID */
+
+.place-ships {
+  width: auto;
+  height: auto;
+  grid-area: 1 / 2 / 3 / 3;
+  aspect-ratio: 1;
+}
+
+.place-ships .cell {
+}
+
 /* MODAL */
 
 .modal-wrapper {
@@ -177,17 +220,20 @@ body {
 
 /* BOARDS */
 
-.current-player-board {
-  grid-area: 1 / 1 / 2 / 2;
+.current-player-board,
+.current-reference-board {
+  aspect-ratio: 1;
   background-color: #00485c;
   padding: 3.5%;
+}
+
+.current-player-board {
+  grid-area: 1 / 1 / 2 / 2;
   opacity: 50%;
 }
 
 .current-reference-board {
   grid-area: 2 / 2 / 3 / 3;
-  background-color: #00485c;
-  padding: 3.5%;
 }
 
 .current-reference-board .cell {

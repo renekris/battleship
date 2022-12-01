@@ -139,39 +139,44 @@ function createCell(elRow, coords) {
   return cell;
 }
 
-function generateGridCells(activeBoardObj, fromPlayer, toPlayer, canAttack) {
+function setCellElements(fromPlayer, toPlayer, isBoardAttackable, elCell, hitStatus, ship) {
+  if (hitStatus.ship !== null && hitStatus.hit === true) {
+    setAttackedCell(elCell, true);
+    if (hitStatus.ship.isSunk()) {
+      elCell.classList.add(hitStatus.ship.shipName);
+    }
+  } else if (hitStatus.hit === true) {
+    setAttackedCell(elCell, false);
+  }
+
+  if (isBoardAttackable === true && hitStatus.hit === false) {
+    // Board is attackable by active player
+    elCell.classList.add('enabled');
+    elCell.addEventListener('click', (e) => attackTile(e, fromPlayer, toPlayer), { once: true });
+  }
+
+  if (ship !== null && isBoardAttackable === false) {
+    elCell.classList.add(ship.shipName);
+  }
+}
+
+function generateGrid(activeBoardObj, fromPlayer, toPlayer, isBoardAttackable) {
   const elGridDiv = document.createElement('div');
   elGridDiv.classList.add('grid');
   let currentRow = 0;
   let elRow = createRow(elGridDiv, currentRow);
-  activeBoardObj.board.forEach((value, coords) => {
+  activeBoardObj.board.forEach((ship, coords) => {
     if (currentRow !== coords.y) {
       currentRow = coords.y;
       elRow = createRow(elGridDiv, currentRow);
     }
     const elCell = createCell(elRow, coords);
     const hitStatus = getCoordsStatus(
-      canAttack ? toPlayer.playerBoard : fromPlayer.playerBoard,
+      isBoardAttackable ? toPlayer.playerBoard : fromPlayer.playerBoard,
       coords
     );
 
-    if (hitStatus.ship !== null && hitStatus.hit === true) {
-      setAttackedCell(elCell, true);
-      if (hitStatus.ship.isSunk()) {
-        elCell.classList.add(hitStatus.ship.shipName);
-      }
-    } else if (hitStatus.hit === true) {
-      setAttackedCell(elCell, false);
-    }
-    if (canAttack === true && hitStatus.hit === false) {
-      // Board is attackable by active player
-      elCell.classList.add('enabled');
-      elCell.addEventListener('click', (e) => attackTile(e, fromPlayer, toPlayer), { once: true });
-    }
-
-    if (value !== null) {
-      elCell.classList.add(value.shipName);
-    }
+    setCellElements(fromPlayer, toPlayer, isBoardAttackable, elCell, hitStatus, ship);
   });
   return elGridDiv;
 }
@@ -188,7 +193,7 @@ function displayGameBoard(fromPlayer, toPlayer) {
   const elCurrentPlayerBoard = elGameWindow.appendChild(document.createElement('div'));
   elCurrentPlayerBoard.classList.add('current-player-board');
   elCurrentPlayerBoard.appendChild(
-    generateGridCells(
+    generateGrid(
       fromPlayer.playerBoard,
       fromPlayer,
       toPlayer,
@@ -202,7 +207,7 @@ function displayGameBoard(fromPlayer, toPlayer) {
   const elCurrentReferenceBoard = elGameWindow.appendChild(document.createElement('div'));
   elCurrentReferenceBoard.classList.add('current-reference-board');
   elCurrentReferenceBoard.appendChild(
-    generateGridCells(
+    generateGrid(
       fromPlayer.referenceBoard,
       fromPlayer,
       toPlayer,
@@ -214,4 +219,4 @@ function initGame(playerOne, playerTwo) {
   displayGameBoard(playerOne, playerTwo);
 }
 
-export default initGame;
+export { initGame, clearElementChildren };

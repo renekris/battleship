@@ -1,5 +1,9 @@
-import initGame from "./game-controller";
+import { clearElementChildren, initGame } from "./game-controller";
 
+// DOM CACHE
+const elContainer = document.getElementById('container');
+
+// VARIABLES
 const shipTypes = [
   {
     name: 'carrier',
@@ -23,10 +27,57 @@ const shipTypes = [
   },
 ];
 
-function displaySetShips() {
+function generateShipCells(ship, height = 1, width = 1) {
+  const elCellGroup = document.createElement('div');
+  elCellGroup.classList.add('cell-group');
+
+  for (let y = 0; y < height; y += 1) {
+    for (let x = 0; x < width; x += 1) {
+      const elCell = elCellGroup.appendChild(document.createElement('div'));
+      elCell.classList.add('cell');
+      elCell.classList.add(ship.name);
+      elCell.dataset.y = y;
+      elCell.dataset.x = x;
+    }
+  }
+  return elCellGroup;
+}
+
+function generateGrid(height = 10, width = 10) {
+  const elGrid = document.createElement('div');
+  elGrid.classList.add('grid');
+  for (let y = 0; y < height; y += 1) {
+    const elRow = elGrid.appendChild(document.createElement('div'));
+    elRow.classList.add('row');
+    for (let x = 0; x < width; x += 1) {
+      const elCell = elRow.appendChild(document.createElement('div'));
+      elCell.classList.add('cell');
+      elCell.dataset.y = y;
+      elCell.dataset.x = x;
+    }
+  }
+  return elGrid;
+}
+
+function displaySetShips(playerObject) {
+  clearElementChildren(elContainer);
+
   // todo:
   // show modal with player name saying who has to place ships
   // after user agreement, let them place ships with drag & drop
+  const elSetShipsDiv = elContainer.appendChild(document.createElement('div'));
+  elSetShipsDiv.classList.add('set-ships-wrapper');
+
+  const elShipStorage = elSetShipsDiv.appendChild(document.createElement('div'));
+  elShipStorage.classList.add('ship-storage');
+  shipTypes.forEach((ship) => {
+    // default ship direction is vertical
+    elShipStorage.appendChild(generateShipCells(ship, ship.shipLength, 1));
+  });
+
+  const elShipGrid = elSetShipsDiv.appendChild(document.createElement('div'));
+  elShipGrid.classList.add('place-ships');
+  elShipGrid.appendChild(generateGrid(10, 10));
 }
 
 function getRandomInclusive(min, max) {
@@ -105,6 +156,7 @@ function setRandomShips(playerObject) {
 
 function initShipPlacement(playerOne, playerTwo) {
   // displaySetShips(playerOne);
+  // note to self: comment out past this for dev
   setRandomShips(playerOne); // temp
   if (playerTwo.isCpu) {
     setRandomShips(playerTwo);
