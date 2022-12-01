@@ -180,14 +180,14 @@ body {
 .current-player-board {
   grid-area: 1 / 1 / 2 / 2;
   background-color: #00485c;
-  padding: 1rem;
+  padding: 3.5%;
   opacity: 50%;
 }
 
 .current-reference-board {
   grid-area: 2 / 2 / 3 / 3;
   background-color: #00485c;
-  padding: 1rem;
+  padding: 3.5%;
 }
 
 .current-reference-board .cell {
@@ -200,6 +200,7 @@ body {
   display: grid;
   width: 100%;
   height: 100%;
+  /* border: #6c9daa 0.2vw solid; */
 
   position: relative;
   z-index: 0;
@@ -214,8 +215,7 @@ body {
   background-color: #7db1c0;
   width: 100%;
   height: 100%;
-  border: inherit;
-  box-shadow: inset 0 0 1px 0;
+  box-shadow: inset 0 0 0.5vw 0 #6c9daa;
 
   -webkit-mask-position: center;
   -webkit-mask-size: contain;
@@ -224,7 +224,7 @@ body {
   mask-size: contain;
   mask-repeat: no-repeat;
 
-  animation-duration: 0.5s;
+  animation-duration: 0.25s;
   animation-iteration-count: 1;
   animation-timing-function: ease-in-out;
 }
@@ -343,27 +343,80 @@ body {
 
 /* SHIPS */
 
+.carrier.animate,
+.battleship.animate,
+.cruiser.animate,
+.submarine.animate,
+.destroyer.animate {
+  animation-name: ship-flash-animation, shake;
+  animation-duration: 0.25s;
+  animation-timing-function: ease;
+}
+
 .cell.carrier {
   background-color: var(--carrier);
-  animation-name: none;
+  --ship-color: var(--carrier);
 }
 
 .cell.battleship {
   background-color: var(--battleship);
-  animation-name: none;
+  --ship-color: var(--battleship);
 }
 
 .cell.cruiser {
   background-color: var(--cruiser);
-  animation-name: none;
+  --ship-color: var(--cruiser);
 }
 
 .cell.submarine {
   background-color: var(--submarine);
-  animation-name: none;
+  --ship-color: var(--submarine);
 }
 
 .cell.destroyer {
   background-color: var(--destroyer);
-  animation-name: none;
+  --ship-color: var(--destroyer);
+}
+
+@keyframes ship-flash-animation {
+  0% {
+    background-color: white;
+  }
+  100% {
+    background-color: var(--ship-color);
+  }
+}
+
+@keyframes shake {
+  10% {
+    transform: translate(-1.5px, 2.5px) rotate(1.5deg);
+  }
+  20% {
+    transform: translate(1.5px, -1.5px) rotate(-0.5deg);
+  }
+  30% {
+    transform: translate(-0.5px, -1.5px) rotate(1.5deg);
+  }
+  40% {
+    transform: translate(1.5px, -1.5px) rotate(-0.5deg);
+  }
+  50% {
+    transform: translate(0.5px, 2.5px) rotate(1.5deg);
+  }
+  60% {
+    transform: translate(-0.5px, 0.5px) rotate(-0.5deg);
+  }
+  70% {
+    transform: translate(1.5px, 0.5px) rotate(-0.5deg);
+  }
+  80% {
+    transform: translate(-0.5px, -0.5px) rotate(0.5deg);
+  }
+  90% {
+    transform: translate(0.5px, -1.5px) rotate(-0.5deg);
+  }
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(0);
+  }
 }

@@ -125,8 +125,8 @@ function gameBoardFactory(width = 10, height = 10) {
     return true;
   }
 
-  function placeShip(shipName, coords = [{ x: 0, y: 0 }]) {
-    const newShip = shipFactory(shipName, coords.length);
+  function placeShip(shipName, coords = [{ x: 0, y: 0 }, { x: 0, y: 1 }]) {
+    const newShip = shipFactory(shipName, coords.length, coords);
     const shipTiles = [];
     ships.push(newShip);
     coords.forEach(coord => {
@@ -176,10 +176,10 @@ function gameBoardFactory(width = 10, height = 10) {
   function areShipsSunk() {
     let shipTileCount = 0;
     let shipSinkTileCount = 0;
-    board.forEach((ship) => {
-      if (ship !== null) {
+    board.forEach((cell) => {
+      if (cell !== null) {
         shipTileCount += 1;
-        if (ship.isSunk()) {
+        if (cell.isSunk()) {
           shipSinkTileCount += 1;
         }
       }

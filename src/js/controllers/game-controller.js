@@ -61,14 +61,24 @@ function checkWinCondition(playerOne, playerTwo) {
 
 function updateCellAnimation(elCell, coords, toPlayer = playerFactory()) {
   const target = toPlayer.playerBoard.boardFindValue(coords);
-  const doesShipExist = target !== null;
-  setAttackedCell(elCell, doesShipExist);
-
+  const isTargetShip = target !== null;
+  setAttackedCell(elCell, isTargetShip);
 
   elCell.classList.add('hit-animation');
   elCell.addEventListener('animationend', () => {
     elCell.classList.remove('hit-animation');
     elCell.classList.add('glow-animation');
+
+    if (isTargetShip) {
+      if (target.isSunk()) {
+        elCell.classList.remove('glow-animation');
+        target.shipCoordinates.forEach(({ x, y }) => {
+          const elCoordCell = document.querySelector(`.current-reference-board .cell[data-x="${x}"][data-y="${y}"]`);
+          elCoordCell.classList.add(target.shipName);
+          elCoordCell.classList.add('animate');
+        });
+      }
+    }
   });
 }
 

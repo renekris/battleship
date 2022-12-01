@@ -1,8 +1,8 @@
-function shipFactory(shipName, length) {
+function shipFactory(shipName, length, shipCoordinates) {
   let hits = 0;
 
-  function hit(amount = 1) {
-    hits += amount;
+  function hit(damageAmount = 1) {
+    hits += damageAmount;
     return hits;
   }
 
@@ -16,6 +16,7 @@ function shipFactory(shipName, length) {
   return {
     shipName,
     length,
+    shipCoordinates,
     hit,
     isSunk,
   }
