@@ -26,10 +26,71 @@ const shipTypes = [
     shipLength: 2
   },
 ];
+// #region Dragging
+const draggableObjects = [];
+let activeDraggable = null;
+class DraggableCellGroup {
+  constructor(element) {
+    this.isDragging = false;
+    this.clickedTile = null;
+    this.elItem = element;
+    this.xOffset = 0;
+    this.yOffset = 0;
+
+    this.elItem.addEventListener('pointerdown', (e) => this.dragStart(e), false);
+    this.elItem.addEventListener('pointerup', (e) => this.dragEnd(e), false);
+    elContainer.addEventListener('pointermove', (e) => this.dragMove(e), false);
+  }
+
+  dragStart(e) {
+    this.initialX = e.clientX - this.xOffset;
+    this.initialY = e.clientY - this.yOffset;
+
+    this.clickedTile = e.target;
+    this.isDragging = true;
+    activeDraggable = this;
+  }
+
+  dragMove(e) {
+    if (this.isDragging) {
+      e.preventDefault();
+
+      this.currentX = e.clientX - this.initialX;
+      this.currentY = e.clientY - this.initialY;
+
+      this.xOffset = this.currentX;
+      this.yOffset = this.currentY;
+
+      setTranslate(this.currentX, this.currentY, this.elItem);
+    }
+  }
+
+  dragEnd(e) {
+    this.initialX = this.currentX;
+    this.initialY = this.currentY;
+
+    this.isDragging = false;
+    // this.elItem.style['z-index'] = -1;
+    console.log(draggableObjects);
+  }
+}
+
+function setTranslate(xPos, yPos, element) {
+  element.style.transform = `translate3d(${xPos}px, ${yPos}px, 0)`;
+}
+
+function dropItem(e) {
+  console.dir(e)
+}
+// #endregion
+
 
 function generateShipCells(ship, height = 1, width = 1) {
   const elCellGroup = document.createElement('div');
+  elCellGroup.style.position = 'relative';
   elCellGroup.classList.add('cell-group');
+
+  draggableObjects.push(new DraggableCellGroup(elCellGroup));
 
   for (let y = 0; y < height; y += 1) {
     for (let x = 0; x < width; x += 1) {
@@ -54,6 +115,8 @@ function generateGrid(height = 10, width = 10) {
       elCell.classList.add('cell');
       elCell.dataset.y = y;
       elCell.dataset.x = x;
+
+      elCell.addEventListener('cuechange', (e) => dropItem(e));
     }
   }
   return elGrid;
@@ -155,20 +218,20 @@ function setRandomShips(playerObject) {
 }
 
 function initShipPlacement(playerOne, playerTwo) {
-  // displaySetShips(playerOne);
+  displaySetShips(playerOne);
   // note to self: comment out past this for dev
-  setRandomShips(playerOne); // temp
-  if (playerTwo.isCpu) {
-    setRandomShips(playerTwo);
-  } else {
-    // displaySetShips(playerTwo);
-    setRandomShips(playerTwo); // temp
-  }
+  // setRandomShips(playerOne); // temp
+  // if (playerTwo.isCpu) {
+  //   setRandomShips(playerTwo);
+  // } else {
+  //   // displaySetShips(playerTwo);
+  //   setRandomShips(playerTwo); // temp
+  // }
 
-  console.log(playerOne);
-  console.log(playerTwo);
+  // console.log(playerOne);
+  // console.log(playerTwo);
 
-  initGame(playerOne, playerTwo);
+  // initGame(playerOne, playerTwo);
 }
 
 export { initShipPlacement, getPureRandomShipArray, shipTypes };
