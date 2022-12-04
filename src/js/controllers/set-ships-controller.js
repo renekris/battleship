@@ -28,21 +28,22 @@ const shipTypes = [
 ];
 // #region Dragging
 const draggableObjects = [];
+const gridCells = [];
 class DraggableCellGroup {
   constructor(element) {
     this.isDragging = false;
-    this.clickedTile = null;
-    this.elItem = element;
+    this.elGroupActiveCell = null;
+    this.elCellGroup = element;
     this.offsetX = 0;
     this.offsetY = 0;
 
-    this.elItem.addEventListener('pointerdown', (e) => this.dragStart(e), false);
-    this.elItem.addEventListener('pointerup', (e) => this.dragEnd(e), false);
+    this.elCellGroup.addEventListener('pointerdown', (e) => this.dragStart(e), false);
+    this.elCellGroup.addEventListener('pointerup', (e) => this.dragEnd(e), false);
     elContainer.addEventListener('pointermove', (e) => this.dragMove(e), false);
   }
 
   resetElementPosition() {
-    setTranslate(0, 0, this.elItem);
+    setTranslate(0, 0, this.elCellGroup);
     [this.offsetX, this.offsetY] = [0, 0];
   }
 
@@ -50,7 +51,7 @@ class DraggableCellGroup {
     this.initialX = e.clientX - this.offsetX;
     this.initialY = e.clientY - this.offsetY;
 
-    this.clickedTile = e.target;
+    this.elGroupActiveCell = e.target;
     this.isDragging = true;
   }
 
@@ -64,7 +65,7 @@ class DraggableCellGroup {
       this.offsetX = this.currentX;
       this.offsetY = this.currentY;
 
-      setTranslate(this.currentX, this.currentY, this.elItem);
+      setTranslate(this.currentX, this.currentY, this.elCellGroup);
     }
   }
 
@@ -76,6 +77,10 @@ class DraggableCellGroup {
       return;
     }
 
+    const targetCell = gridCells.filter((elCell) => mouseOverlap(e, elCell));
+    targetCell[0].style['background-color'] = 'red';
+    console.log(targetCell);
+
     this.initialX = this.currentX;
     this.initialY = this.currentY;
     console.log(draggableObjects);
@@ -85,8 +90,6 @@ class DraggableCellGroup {
 function setTranslate(xPos, yPos, element) {
   element.style.transform = `translate3d(${xPos}px, ${yPos}px, 0)`;
 }
-
-// #endregion
 
 function mouseOverlap(e, el1) {
   const domRect1 = el1.getBoundingClientRect();
@@ -109,6 +112,8 @@ function elementsOverlap(el1, el2) {
     domRect1.left > domRect2.right
   );
 }
+
+// #endregion
 
 function generateShipCells(ship, height = 1, width = 1) {
   const elCellGroup = document.createElement('div');
@@ -140,6 +145,7 @@ function generateGrid(height = 10, width = 10) {
       elCell.classList.add('cell');
       elCell.dataset.y = y;
       elCell.dataset.x = x;
+      gridCells.push(elCell);
     }
   }
   return elGrid;
