@@ -28,27 +28,30 @@ const shipTypes = [
 ];
 // #region Dragging
 const draggableObjects = [];
-let activeDraggable = null;
 class DraggableCellGroup {
   constructor(element) {
     this.isDragging = false;
     this.clickedTile = null;
     this.elItem = element;
-    this.xOffset = 0;
-    this.yOffset = 0;
+    this.offsetX = 0;
+    this.offsetY = 0;
 
     this.elItem.addEventListener('pointerdown', (e) => this.dragStart(e), false);
     this.elItem.addEventListener('pointerup', (e) => this.dragEnd(e), false);
     elContainer.addEventListener('pointermove', (e) => this.dragMove(e), false);
   }
 
+  resetElementPosition() {
+    setTranslate(0, 0, this.elItem);
+    [this.offsetX, this.offsetY] = [0, 0];
+  }
+
   dragStart(e) {
-    this.initialX = e.clientX - this.xOffset;
-    this.initialY = e.clientY - this.yOffset;
+    this.initialX = e.clientX - this.offsetX;
+    this.initialY = e.clientY - this.offsetY;
 
     this.clickedTile = e.target;
     this.isDragging = true;
-    activeDraggable = this;
   }
 
   dragMove(e) {
@@ -58,19 +61,23 @@ class DraggableCellGroup {
       this.currentX = e.clientX - this.initialX;
       this.currentY = e.clientY - this.initialY;
 
-      this.xOffset = this.currentX;
-      this.yOffset = this.currentY;
+      this.offsetX = this.currentX;
+      this.offsetY = this.currentY;
 
       setTranslate(this.currentX, this.currentY, this.elItem);
     }
   }
 
   dragEnd(e) {
+    this.isDragging = false;
+    const elShipGrid = document.querySelector('.grid');
+    if (!mouseOverlap(e, elShipGrid)) {
+      this.resetElementPosition();
+      return;
+    }
+
     this.initialX = this.currentX;
     this.initialY = this.currentY;
-
-    this.isDragging = false;
-    // this.elItem.style['z-index'] = -1;
     console.log(draggableObjects);
   }
 }
@@ -79,11 +86,29 @@ function setTranslate(xPos, yPos, element) {
   element.style.transform = `translate3d(${xPos}px, ${yPos}px, 0)`;
 }
 
-function dropItem(e) {
-  console.dir(e)
-}
 // #endregion
 
+function mouseOverlap(e, el1) {
+  const domRect1 = el1.getBoundingClientRect();
+  return !(
+    domRect1.top > e.clientY ||
+    domRect1.right < e.clientX ||
+    domRect1.bottom < e.clientY ||
+    domRect1.left > e.clientX
+  );
+}
+
+function elementsOverlap(el1, el2) {
+  const domRect1 = el1.getBoundingClientRect();
+  const domRect2 = el2.getBoundingClientRect();
+
+  return !(
+    domRect1.top > domRect2.bottom ||
+    domRect1.right < domRect2.left ||
+    domRect1.bottom < domRect2.top ||
+    domRect1.left > domRect2.right
+  );
+}
 
 function generateShipCells(ship, height = 1, width = 1) {
   const elCellGroup = document.createElement('div');
@@ -115,8 +140,6 @@ function generateGrid(height = 10, width = 10) {
       elCell.classList.add('cell');
       elCell.dataset.y = y;
       elCell.dataset.x = x;
-
-      elCell.addEventListener('cuechange', (e) => dropItem(e));
     }
   }
   return elGrid;
