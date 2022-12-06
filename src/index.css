@@ -146,11 +146,12 @@ body {
 }
 
 .cell-group {
-  display: grid;
+  display: flex;
   align-content: flex-start;
   height: max-content;
-  z-index: 1;
+  flex-direction: column;
   cursor: move;
+  z-index: 1;
 }
 
 .cell-group:active {
