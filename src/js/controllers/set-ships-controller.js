@@ -86,6 +86,33 @@ class DraggableCellGroup {
     [this.offsetX, this.offsetY] = [0, 0];
   }
 
+  setElementPositionToCenter(shipCoordinates) {
+    this.resetElementPosition();
+    const gridCoordCells = findGridCells(shipCoordinates);
+    const cellGroup = {
+      top: Number.POSITIVE_INFINITY,
+      right: Number.NEGATIVE_INFINITY,
+      bottom: Number.NEGATIVE_INFINITY,
+      left: Number.POSITIVE_INFINITY,
+    };
+    gridCoordCells.forEach((elCell) => {
+      const rect = elCell.getBoundingClientRect();
+      cellGroup.top = rect.top < cellGroup.top ? rect.top : cellGroup.top;
+      cellGroup.right = rect.right > cellGroup.right ? rect.right : cellGroup.right;
+      cellGroup.bottom = rect.bottom > cellGroup.bottom ? rect.bottom : cellGroup.bottom;
+      cellGroup.left = rect.left < cellGroup.left ? rect.left : cellGroup.left;
+    });
+    cellGroup.width = cellGroup.right - cellGroup.left;
+    cellGroup.height = cellGroup.bottom - cellGroup.top;
+    const rectGroup = this.elCellGroup.getBoundingClientRect();
+    const coords = [
+      ((cellGroup.width - rectGroup.width) / 2) + cellGroup.left - rectGroup.left,
+      ((cellGroup.height - rectGroup.height) / 2) + cellGroup.top - rectGroup.top
+    ];
+    setTranslate(coords[0], coords[1], this.elCellGroup);
+    [this.offsetX, this.offsetY] = coords;
+  }
+
   dragStart(e) {
     if (e.button !== 0 && e.buttons <= 1 && e.isPrimary === false) return;
     this.initialX = e.clientX - this.offsetX;
@@ -181,23 +208,32 @@ function resetPlacedShip(shipName, resetElementPosition = true) {
   return false;
 }
 
-function updateHoveredGridCells(coords, shipName, canRemovePaint = false) {
-  if (coords === null) return;
-
-  for (let i = 0; i < coords.length; i += 1) {
-    const coord = coords[i];
+function findGridCells(coordsArray) {
+  const gridCellsArray = [];
+  for (let i = 0; i < coordsArray.length; i += 1) {
+    const coord = coordsArray[i];
     for (let j = 0; j < gridCells.length; j += 1) {
       const elCell = gridCells[j];
       // eslint-disable-next-line eqeqeq
       if (elCell.dataset.x == coord[0] && elCell.dataset.y == coord[1]) {
-        if (canRemovePaint) {
-          elCell.classList.remove(`hover-${shipName}`);
-        } else {
-          elCell.classList.add(`hover-${shipName}`);
-        }
+        gridCellsArray.push(elCell);
+        break;
       }
     }
   }
+  return gridCellsArray;
+}
+
+function updateHoveredGridCells(coords, shipName, canRemovePaint = false) {
+  if (coords === null) return;
+  const elGridCells = findGridCells(coords);
+  elGridCells.forEach((elCell) => {
+    if (canRemovePaint) {
+      elCell.classList.remove(`hover-${shipName}`);
+    } else {
+      elCell.classList.add(`hover-${shipName}`);
+    }
+  });
 }
 
 function setTranslate(xPos, yPos, element) {
@@ -342,6 +378,15 @@ function generateGrid(height = 10, width = 10) {
   return elGrid;
 }
 
+function deserializeCoords(array) {
+  const newCoordArray = [];
+  for (let i = 0; i < array.length; i += 1) {
+    const coord = array[i];
+    newCoordArray.push([coord.x, coord.y]);
+  }
+  return newCoordArray;
+}
+
 function serializeCoords(array) {
   const newObjectArray = [];
   for (let i = 0; i < array.length; i += 1) {
@@ -358,7 +403,22 @@ function setShips(playerObject) {
 }
 
 function clickRandomize() {
+  placedShips = [];
+  const allShipCoordinates = getPureRandomShipArray(shipTypes);
+  for (let i = 0; i < draggableObjects.length; i += 1) {
+    const draggableObject = draggableObjects[i];
+    const coordinates = deserializeCoords(allShipCoordinates[i]);
 
+    draggableObject.setElementPositionToCenter(coordinates);
+
+    placedShips.push({
+      cellGroupObj: draggableObject,
+      coords: coordinates,
+      shipName: draggableObject.shipObj.name,
+    });
+  }
+  elContinueButton.disabled = false;
+  reDrawGridCells();
 }
 
 function clickContinue(playerOne, playerTwo) {
@@ -366,7 +426,7 @@ function clickContinue(playerOne, playerTwo) {
   if (playerOneTurn) {
     setShips(playerOne);
     if (playerTwo.isCpu) {
-      setRandomShips(playerTwo);
+      setRandomShips(playerTwo, true);
       initGame(playerOne, playerTwo);
     } else {
       playerOneTurn = false;
@@ -455,25 +515,29 @@ function isOverlappingBlacklist(currentCoords, shipOrientation, shipLength, blac
   return false;
 }
 
-function getRandomCoordinates(shipLength, blacklist) {
+function getRandomCoordinates(ship, blacklist, hasRandomOrientation) {
   let newCoords;
   let shipOrientation;
   do {
     // 0 = horizontal | 1 = vertical
-    shipOrientation = getRandomInclusive(0, 1);
+    if (hasRandomOrientation) {
+      shipOrientation = getRandomInclusive(0, 1);
+    } else {
+      shipOrientation = ship.orientation === 'horizontal' ? 0 : 1;
+    }
     if (shipOrientation === 0) {
       // horizontal
-      newCoords = { x: getRandomInclusive(0, 9 - shipLength + 1), y: getRandomInclusive(0, 9) };
+      newCoords = { x: getRandomInclusive(0, 9 - ship.shipLength + 1), y: getRandomInclusive(0, 9) };
     } else {
       // vertical
-      newCoords = { x: getRandomInclusive(0, 9), y: getRandomInclusive(0, 9 - shipLength + 1) };
+      newCoords = { x: getRandomInclusive(0, 9), y: getRandomInclusive(0, 9 - ship.shipLength + 1) };
     }
-  } while (isOverlappingBlacklist(newCoords, shipOrientation, shipLength, blacklist));
+  } while (isOverlappingBlacklist(newCoords, shipOrientation, ship.shipLength, blacklist));
 
   const coordArray = [];
   coordArray.push(newCoords);
-  // shipLength - 1 for having starting string
-  for (let i = 0; i < shipLength - 1; i += 1) {
+  // ship.shipLength - 1 for having starting string
+  for (let i = 0; i < ship.shipLength - 1; i += 1) {
     const lastValue = coordArray[coordArray.length - 1];
     if (shipOrientation === 0) {
       // horizontal
@@ -486,16 +550,16 @@ function getRandomCoordinates(shipLength, blacklist) {
   return coordArray;
 }
 
-function getPureRandomShipArray(ships) {
+function getPureRandomShipArray(ships, hasRandomOrientation) {
   const shipCoordinates = [];
   for (let i = 0; i < ships.length; i += 1) {
-    shipCoordinates.push(getRandomCoordinates(ships[i].shipLength, shipCoordinates));
+    shipCoordinates.push(getRandomCoordinates(ships[i], shipCoordinates, hasRandomOrientation));
   }
   return shipCoordinates;
 }
 
-function setRandomShips(playerObject) {
-  const coordinates = getPureRandomShipArray(shipTypes);
+function setRandomShips(playerObject, hasRandomOrientation = true) {
+  const coordinates = getPureRandomShipArray(shipTypes, hasRandomOrientation);
   for (let i = 0; i < coordinates.length; i += 1) {
     const shipCoordinates = coordinates[i];
     playerObject.playerBoard.placeShip(shipTypes[i].name, shipCoordinates);
