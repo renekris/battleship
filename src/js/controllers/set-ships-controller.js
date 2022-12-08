@@ -163,15 +163,18 @@ function resetOverlappingShips(newCoords, shipName) {
   const toRemove = [];
   for (let placedShipIndex = 0; placedShipIndex < placedShips.length; placedShipIndex += 1) {
     const placedShip = placedShips[placedShipIndex];
-    if (placedShip.shipName === shipName) {
-      resetPlacedShip(placedShip.shipName, false);
-      break;
-    }
 
-    for (let pSI = 0; pSI < placedShip.coords.length; pSI += 1) {
-      const placedCoords = placedShip.coords[pSI];
-      for (let nCI = 0; nCI < newCoords.length; nCI += 1) {
-        const newCoord = newCoords[nCI];
+    for (let nCI = 0; nCI < newCoords.length; nCI += 1) {
+      const newCoord = newCoords[nCI];
+      if (placedShip.shipName === shipName) {
+        toRemove.push(placedShip.shipName);
+        if (placedShip.coords.some((coord) => coord[0] === newCoord[0] && coord[1] === newCoord[1])) {
+          break;
+        }
+      }
+
+      for (let pSI = 0; pSI < placedShip.coords.length; pSI += 1) {
+        const placedCoords = placedShip.coords[pSI];
         if (newCoord[0] === placedCoords[0] && newCoord[1] === placedCoords[1]) {
           placedShip.cellGroupObj.resetElementPosition();
           toRemove.push(placedShip.shipName);
@@ -180,7 +183,7 @@ function resetOverlappingShips(newCoords, shipName) {
       }
     }
   }
-  toRemove.forEach((name) => resetPlacedShip(name));
+  toRemove.forEach((name) => resetPlacedShip(name, false));
 }
 
 function removeCellShipNames(elCell) {
