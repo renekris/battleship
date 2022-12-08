@@ -2,9 +2,10 @@ import { clearElementChildren, initGame } from "./game-controller";
 
 // DOM CACHE
 const elContainer = document.getElementById('container');
+let elContinueButton;
 
 // VARIABLES
-const shipTypes = [
+const baseShipTypes = [
   {
     name: 'carrier',
     shipLength: 5,
@@ -14,7 +15,8 @@ const shipTypes = [
       [0, 2],
       [0, 3],
       [0, 4],
-    ]
+    ],
+    orientation: 'vertical',
   },
   {
     name: 'battleship',
@@ -24,7 +26,8 @@ const shipTypes = [
       [0, 1],
       [0, 2],
       [0, 3],
-    ]
+    ],
+    orientation: 'vertical',
   },
   {
     name: 'cruiser',
@@ -33,7 +36,8 @@ const shipTypes = [
       [0, 0],
       [0, 1],
       [0, 2],
-    ]
+    ],
+    orientation: 'vertical',
   },
   {
     name: 'submarine',
@@ -42,7 +46,8 @@ const shipTypes = [
       [0, 0],
       [0, 1],
       [0, 2],
-    ]
+    ],
+    orientation: 'vertical',
   },
   {
     name: 'destroyer',
@@ -50,13 +55,16 @@ const shipTypes = [
     relativeCoords: [
       [0, 0],
       [0, 1],
-    ]
+    ],
+    orientation: 'vertical',
   },
 ];
-const draggableObjects = [];
-const gridCells = [];
-const placedShips = [];
-
+let shipTypes = baseShipTypes;
+let draggableObjects = [];
+let gridCells = [];
+let placedShips = [];
+let elPlaceShipGrid = null;
+let playerOneTurn = true;
 class DraggableCellGroup {
   constructor(element, shipType) {
     this.isDragging = false;
@@ -65,6 +73,8 @@ class DraggableCellGroup {
     this.shipObj = shipType;
     this.offsetX = 0;
     this.offsetY = 0;
+    this.elHoveredOnCell = null;
+    this.hoveredCoords = null;
 
     this.elCellGroup.addEventListener('pointerdown', (e) => this.dragStart(e), false);
     this.elCellGroup.addEventListener('pointerup', (e) => this.dragEnd(e), false);
@@ -96,13 +106,25 @@ class DraggableCellGroup {
       this.offsetY = this.currentY;
 
       setTranslate(this.currentX, this.currentY, this.elCellGroup);
+      if (mouseOverlap(e, elPlaceShipGrid)) {
+        const elHoveredOnCell = gridCells.filter((elCell) => mouseOverlap(e, elCell))[0];
+        if (elHoveredOnCell !== this.elHoveredOnCell) {
+          this.elHoveredOnCell = elHoveredOnCell;
+
+          updateHoveredGridCells(this.hoveredCoords, this.shipObj.name, true);
+          const hoveredCoords = getDroppedOnCoords(this, elHoveredOnCell);
+          this.hoveredCoords = hoveredCoords;
+          updateHoveredGridCells(hoveredCoords, this.shipObj.name, false);
+        }
+      }
     }
   }
 
   dragEnd(e) {
     this.isDragging = false;
-    const elShipGrid = document.querySelector('.grid');
-    if (!mouseOverlap(e, elShipGrid)) {
+
+    updateHoveredGridCells(this.hoveredCoords, this.shipObj.name, true);
+    if (!mouseOverlap(e, elPlaceShipGrid)) {
       this.resetElementPosition();
       if (resetPlacedShip(this.shipObj.name)) {
         reDrawGridCells();
@@ -111,11 +133,37 @@ class DraggableCellGroup {
     }
 
     const elDroppedOnCell = gridCells.filter((elCell) => mouseOverlap(e, elCell))[0];
-    updateGridWithDrop(this, elDroppedOnCell);
+    const droppedOnCoords = getDroppedOnCoords(this, elDroppedOnCell);
+    updateGridWithDrop(this, droppedOnCoords);
 
     this.initialX = this.currentX;
     this.initialY = this.currentY;
     console.log(draggableObjects);
+    if (placedShips.length >= 5) {
+      elContinueButton.disabled = false;
+    } else {
+      elContinueButton.disabled = true;
+    }
+  }
+}
+
+function resetVariableData() {
+  draggableObjects = [];
+  gridCells = [];
+  placedShips = [];
+  elPlaceShipGrid = null;
+  shipTypes = baseShipTypes;
+}
+
+function randomizeShipTypes() {
+  for (let i = 0; i < shipTypes.length; i += 1) {
+    const ship = shipTypes[i];
+    const shipDirection = getRandomInclusive(0, 1);
+    // 0 = vertical || 1 = horizontal
+    if (shipDirection === 1) {
+      ship.relativeCoords = ship.relativeCoords.map((coords) => [coords[1], coords[0]]);
+      ship.orientation = 'horizontal';
+    }
   }
 }
 
@@ -131,6 +179,25 @@ function resetPlacedShip(shipName, resetElementPosition = true) {
     }
   }
   return false;
+}
+
+function updateHoveredGridCells(coords, shipName, canRemovePaint = false) {
+  if (coords === null) return;
+
+  for (let i = 0; i < coords.length; i += 1) {
+    const coord = coords[i];
+    for (let j = 0; j < gridCells.length; j += 1) {
+      const elCell = gridCells[j];
+      // eslint-disable-next-line eqeqeq
+      if (elCell.dataset.x == coord[0] && elCell.dataset.y == coord[1]) {
+        if (canRemovePaint) {
+          elCell.classList.remove(`hover-${shipName}`);
+        } else {
+          elCell.classList.add(`hover-${shipName}`);
+        }
+      }
+    }
+  }
 }
 
 function setTranslate(xPos, yPos, element) {
@@ -210,7 +277,7 @@ function getDatasetCoords(element) {
   return [parseInt(element.dataset.x, 10), parseInt(element.dataset.y, 10)];
 }
 
-function updateGridWithDrop(cellGroupObj, elDroppedOnCell) {
+function getDroppedOnCoords(cellGroupObj, elDroppedOnCell) {
   const groupRelativeCoords = Array.from(cellGroupObj.elCellGroup.children).map((elCell) => getDatasetCoords(elCell));
   const cellActiveRelCoords = getDatasetCoords(cellGroupObj.elGroupActiveCell);
   const cellDropCoords = getDatasetCoords(elDroppedOnCell);
@@ -219,15 +286,18 @@ function updateGridWithDrop(cellGroupObj, elDroppedOnCell) {
   groupRelativeCoords.forEach((coords) => {
     finalCoords.push([(coords[0] + cellDropCoords[0]) - cellActiveRelCoords[0], (coords[1] + cellDropCoords[1]) - cellActiveRelCoords[1]]);
   });
+  return finalCoords;
+}
 
-  if (finalCoords.some((coord) => coord[0] < 0 || coord[0] > 9 || coord[1] < 0 || coord[1] > 9)) {
+function updateGridWithDrop(cellGroupObj, droppedOnCoords) {
+  if (droppedOnCoords.some((coord) => coord[0] < 0 || coord[0] > 9 || coord[1] < 0 || coord[1] > 9)) {
     resetPlacedShip(cellGroupObj.shipObj.name, false);
     cellGroupObj.resetElementPosition();
   } else {
-    resetOverlappingShips(finalCoords, cellGroupObj.shipObj.name);
+    resetOverlappingShips(droppedOnCoords, cellGroupObj.shipObj.name);
     placedShips.push({
       shipName: cellGroupObj.shipObj.name,
-      coords: finalCoords,
+      coords: droppedOnCoords,
       cellGroupObj,
     });
   }
@@ -239,6 +309,7 @@ function generateShipCells(ship) {
   const elCellGroup = document.createElement('div');
   elCellGroup.style.position = 'relative';
   elCellGroup.classList.add('cell-group');
+  elCellGroup.classList.add(ship.orientation);
 
   draggableObjects.push(new DraggableCellGroup(elCellGroup, ship));
 
@@ -267,10 +338,48 @@ function generateGrid(height = 10, width = 10) {
       gridCells.push(elCell);
     }
   }
+  elPlaceShipGrid = elGrid;
   return elGrid;
 }
 
-function displaySetShips(playerObject) {
+function serializeCoords(array) {
+  const newObjectArray = [];
+  for (let i = 0; i < array.length; i += 1) {
+    const coord = array[i];
+    newObjectArray.push({ x: coord[0], y: coord[1] });
+  }
+  return newObjectArray;
+}
+
+function setShips(playerObject) {
+  placedShips.forEach((ship) => {
+    playerObject.playerBoard.placeShip(ship.shipName, serializeCoords(ship.coords));
+  });
+}
+
+function clickRandomize() {
+
+}
+
+function clickContinue(playerOne, playerTwo) {
+  if (placedShips.length < 5) return;
+  if (playerOneTurn) {
+    setShips(playerOne);
+    if (playerTwo.isCpu) {
+      setRandomShips(playerTwo);
+      initGame(playerOne, playerTwo);
+    } else {
+      playerOneTurn = false;
+      resetVariableData();
+      displaySetShips(playerOne, playerTwo);
+    }
+  } else {
+    setShips(playerTwo);
+    initGame(playerOne, playerTwo);
+  }
+}
+
+function displaySetShips(playerOne, playerTwo) {
   clearElementChildren(elContainer);
 
   // todo:
@@ -281,13 +390,42 @@ function displaySetShips(playerObject) {
 
   const elShipStorage = elSetShipsDiv.appendChild(document.createElement('div'));
   elShipStorage.classList.add('ship-storage');
+
+  const elShipStorageHorizontal = elShipStorage.appendChild(document.createElement('div'));
+  elShipStorageHorizontal.classList.add('horizontal-ships');
+  const elShipStorageVertical = elShipStorage.appendChild(document.createElement('div'));
+  elShipStorageVertical.classList.add('vertical-ships');
+  randomizeShipTypes();
   shipTypes.forEach((ship) => {
-    elShipStorage.appendChild(generateShipCells(ship));
+    const shipGroup = generateShipCells(ship);
+    if (shipGroup.classList.contains('horizontal')) {
+      elShipStorageHorizontal.appendChild(shipGroup);
+    } else {
+      elShipStorageVertical.appendChild(shipGroup);
+    }
   });
+  if (elShipStorageVertical.children.length <= 0) {
+    elShipStorageVertical.remove();
+  } else if (elShipStorageHorizontal.children.length <= 0) {
+    elShipStorageHorizontal.remove();
+  }
+
 
   const elShipGrid = elSetShipsDiv.appendChild(document.createElement('div'));
   elShipGrid.classList.add('place-ships');
   elShipGrid.appendChild(generateGrid(10, 10));
+
+  const elRandomize = elContainer.appendChild(document.createElement('button'));
+  elRandomize.addEventListener('click', () => clickRandomize());
+  elRandomize.classList.add('randomize-button');
+  elRandomize.textContent = 'Randomize';
+
+  const elContinue = elContainer.appendChild(document.createElement('button'));
+  elContinue.addEventListener('click', () => clickContinue(playerOne, playerTwo));
+  elContinue.classList.add('continue-button');
+  elContinue.textContent = 'Continue';
+  elContinue.disabled = true;
+  elContinueButton = elContinue;
 }
 
 function getRandomInclusive(min, max) {
@@ -365,7 +503,7 @@ function setRandomShips(playerObject) {
 }
 
 function initShipPlacement(playerOne, playerTwo) {
-  displaySetShips(playerOne);
+  displaySetShips(playerOne, playerTwo);
   // note to self: comment out past this for dev
   // setRandomShips(playerOne); // temp
   // if (playerTwo.isCpu) {
@@ -381,4 +519,4 @@ function initShipPlacement(playerOne, playerTwo) {
   // initGame(playerOne, playerTwo);
 }
 
-export { initShipPlacement, getPureRandomShipArray, shipTypes };
+export { initShipPlacement, getPureRandomShipArray, baseShipTypes };

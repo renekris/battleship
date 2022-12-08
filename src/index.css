@@ -7,6 +7,11 @@
   --cruiser: greenyellow;
   --submarine: gold;
   --destroyer: green;
+  --hover-carrier: rgb(201, 109, 109);
+  --hover-battleship: rgb(190, 150, 228);
+  --hover-cruiser: rgb(230, 255, 191);
+  --hover-submarine: rgb(255, 241, 164);
+  --hover-destroyer: rgb(111, 172, 111);
 }
 
 *,
@@ -139,19 +144,43 @@ body {
 /* SHIPS STORAGE */
 
 .ship-storage {
+  grid-area: 1 / 1 / 3 / 2;
   display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
   width: 100%;
   height: auto;
-  grid-area: 1 / 1 / 3 / 2;
+}
+
+.ship-storage .horizontal-ships {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.ship-storage .vertical-ships {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-start;
 }
 
 .cell-group {
   display: flex;
-  align-content: flex-start;
   height: max-content;
-  flex-direction: column;
+  width: max-content;
   cursor: move;
   z-index: 1;
+}
+
+.cell-group.horizontal {
+  flex-direction: row;
+}
+
+.cell-group.vertical {
+  flex-direction: column;
 }
 
 .cell-group:active {
@@ -175,7 +204,24 @@ body {
   aspect-ratio: 1;
 }
 
-.place-ships .cell {
+.place-ships .hover-carrier {
+  background-color: var(--hover-carrier);
+}
+
+.place-ships .hover-battleship {
+  background-color: var(--hover-battleship);
+}
+
+.place-ships .hover-cruiser {
+  background-color: var(--hover-cruiser);
+}
+
+.place-ships .hover-submarine {
+  background-color: var(--hover-submarine);
+}
+
+.place-ships .hover-destroyer {
+  background-color: var(--hover-destroyer);
 }
 
 /* MODAL */
