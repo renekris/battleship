@@ -154,6 +154,7 @@ class DraggableCellGroup {
     if (!mouseOverlap(e, elPlaceShipGrid)) {
       this.resetElementPosition();
       if (resetPlacedShip(this.shipObj.name)) {
+        checkPlacedShips();
         reDrawGridCells();
       }
       return;
@@ -166,11 +167,15 @@ class DraggableCellGroup {
     this.initialX = this.currentX;
     this.initialY = this.currentY;
     console.log(draggableObjects);
-    if (placedShips.length >= 5) {
-      elContinueButton.disabled = false;
-    } else {
-      elContinueButton.disabled = true;
-    }
+    checkPlacedShips();
+  }
+}
+
+function checkPlacedShips() {
+  if (placedShips.length >= 5) {
+    elContinueButton.disabled = false;
+  } else {
+    elContinueButton.disabled = true;
   }
 }
 
@@ -402,7 +407,8 @@ function setShips(playerObject) {
   });
 }
 
-function clickRandomize() {
+function clickRandomize(e) {
+  e.target.blur();
   placedShips = [];
   const allShipCoordinates = getPureRandomShipArray(shipTypes);
   for (let i = 0; i < draggableObjects.length; i += 1) {
@@ -421,7 +427,7 @@ function clickRandomize() {
   reDrawGridCells();
 }
 
-function clickContinue(playerOne, playerTwo) {
+function clickContinue(e, playerOne, playerTwo) {
   if (placedShips.length < 5) return;
   if (playerOneTurn) {
     setShips(playerOne);
@@ -445,9 +451,18 @@ function displaySetShips(playerOne, playerTwo) {
   // todo:
   // show modal with player name saying who has to place ships
   // after user agreement, let them place ships with drag & drop
+
+  // SHIPS DIV
   const elSetShipsDiv = elContainer.appendChild(document.createElement('div'));
   elSetShipsDiv.classList.add('set-ships-wrapper');
 
+  // TITLE
+  const elTitle = elSetShipsDiv.appendChild(document.createElement('p'));
+  const username = playerOneTurn ? playerOne.username : playerTwo.username;
+  elTitle.innerHTML = `Place your ships ${username}!`;
+  elTitle.classList.add('set-ship-title');
+
+  // SHIP STORAGE
   const elShipStorage = elSetShipsDiv.appendChild(document.createElement('div'));
   elShipStorage.classList.add('ship-storage');
 
@@ -470,22 +485,26 @@ function displaySetShips(playerOne, playerTwo) {
     elShipStorageHorizontal.remove();
   }
 
-
+  // GRID
   const elShipGrid = elSetShipsDiv.appendChild(document.createElement('div'));
   elShipGrid.classList.add('place-ships');
   elShipGrid.appendChild(generateGrid(10, 10));
 
-  const elRandomize = elContainer.appendChild(document.createElement('button'));
-  elRandomize.addEventListener('click', () => clickRandomize());
-  elRandomize.classList.add('randomize-button');
-  elRandomize.textContent = 'Randomize';
+  // BUTTONS
+  const elButtonDiv = elSetShipsDiv.appendChild(document.createElement('div'));
+  elButtonDiv.classList.add('buttons');
 
-  const elContinue = elContainer.appendChild(document.createElement('button'));
-  elContinue.addEventListener('click', () => clickContinue(playerOne, playerTwo));
+  const elContinue = elButtonDiv.appendChild(document.createElement('button'));
+  elContinue.addEventListener('click', (e) => clickContinue(e, playerOne, playerTwo));
   elContinue.classList.add('continue-button');
   elContinue.textContent = 'Continue';
   elContinue.disabled = true;
   elContinueButton = elContinue;
+
+  const elRandomize = elButtonDiv.appendChild(document.createElement('button'));
+  elRandomize.addEventListener('click', (e) => clickRandomize(e));
+  elRandomize.classList.add('randomize-button');
+  elRandomize.textContent = 'Randomize Placement';
 }
 
 function getRandomInclusive(min, max) {

@@ -7,11 +7,8 @@
   --cruiser: greenyellow;
   --submarine: gold;
   --destroyer: green;
-  --hover-carrier: rgb(201, 109, 109);
-  --hover-battleship: rgb(190, 150, 228);
-  --hover-cruiser: rgb(230, 255, 191);
-  --hover-submarine: rgb(255, 241, 164);
-  --hover-destroyer: rgb(111, 172, 111);
+
+  --menu-hover: rgb(49, 49, 49);
 }
 
 *,
@@ -47,6 +44,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-direction: column;
 }
 
 /* START MENU */
@@ -128,29 +126,82 @@ body {
 .menu-form > button:hover {
   padding: 0.75rem 0;
   transition: 0.5s;
+  background-color: var(--menu-hover);
 }
 
 /* SET SHIPS */
 
 .set-ships-wrapper {
-  display: grid;
+  display: flex;
+  flex-direction: column;
   height: auto;
-  width: 90%;
-  grid-template-columns: 1fr 2fr;
-  grid-template-rows: 1fr 1fr;
+  width: 100%;
+
   user-select: none;
+}
+
+@media (min-aspect-ratio: 3/4) {
+  #container {
+  }
+
+  #container > div {
+    width: 100% !important;
+  }
+
+  .set-ships-wrapper {
+    flex-direction: row;
+    width: 100%;
+    flex: 1;
+    justify-content: center;
+  }
+
+  .set-ships-wrapper > * {
+    /* flex: auto; */
+  }
+
+  .set-ship-title {
+    width: min-content;
+  }
+
+  .ship-storage {
+    flex-direction: column !important;
+    width: auto !important;
+    margin: 0rem 1rem !important;
+  }
+
+  .cell-group .cell {
+    width: 8vh !important;
+  }
+
+  .place-ships {
+    flex-shrink: 0;
+    /* flex: auto !important; */
+  }
+
+  .place-ships .cell {
+    /* aspect-ratio: 1 !important; */
+  }
+
+  .buttons {
+    margin: 0px !important;
+    width: auto !important;
+  }
+
+  .buttons > * {
+    width: 100% !important;
+  }
 }
 
 /* SHIPS STORAGE */
 
 .ship-storage {
-  grid-area: 1 / 1 / 3 / 2;
   display: flex;
-  flex-direction: column;
-  justify-content: space-evenly;
+  flex-direction: row;
+  justify-content: space-around;
   align-items: center;
   width: 100%;
   height: auto;
+  margin: 1rem 0rem;
 }
 
 .ship-storage .horizontal-ships {
@@ -189,7 +240,7 @@ body {
 
 .cell-group .cell {
   height: auto;
-  width: 5vw;
+  width: 8vw;
   aspect-ratio: 1;
   background-color: white;
   border: solid 1px #000;
@@ -200,28 +251,96 @@ body {
 .place-ships {
   width: auto;
   height: auto;
-  grid-area: 1 / 2 / 3 / 3;
   aspect-ratio: 1;
+  background-color: #00485c;
+  padding: 1.5%;
+}
+
+.place-ships .hover-carrier,
+.place-ships .hover-battleship,
+.place-ships .hover-cruiser,
+.place-ships .hover-submarine,
+.place-ships .hover-destroyer {
+  -webkit-mask-position: center;
+  -webkit-mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-image: url(./img/svg/shot.svg), url(./img/svg/hit.svg);
+  mask-position: center;
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-image: url(./img/svg/shot.svg), url(./img/svg/hit.svg);
 }
 
 .place-ships .hover-carrier {
-  background-color: var(--hover-carrier);
+  background-color: var(--carrier) !important;
 }
 
 .place-ships .hover-battleship {
-  background-color: var(--hover-battleship);
+  background-color: var(--battleship) !important;
 }
 
 .place-ships .hover-cruiser {
-  background-color: var(--hover-cruiser);
+  background-color: var(--cruiser) !important;
 }
 
 .place-ships .hover-submarine {
-  background-color: var(--hover-submarine);
+  background-color: var(--submarine) !important;
 }
 
 .place-ships .hover-destroyer {
-  background-color: var(--hover-destroyer);
+  background-color: var(--destroyer) !important;
+}
+
+.set-ship-title {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  font-size: 1.2rem;
+  color: white;
+}
+
+.buttons {
+  margin: 1rem 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  gap: 0.5rem;
+}
+
+.buttons > *:disabled {
+  color: rgba(255, 255, 255, 0.5) !important;
+  background-color: #000 !important;
+}
+
+.randomize-button,
+.continue-button {
+  width: 100%;
+  background-color: #000;
+  color: white;
+  border: none;
+  margin: 0;
+  padding: 0.5rem 0;
+  transition: 0.25s;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.randomize-button:focus,
+.continue-button:focus,
+.randomize-button:hover,
+.continue-button:hover {
+  transition: 0.2s;
+  background-color: var(--menu-hover);
+}
+
+.continue-button {
+  font-size: 1.5rem;
+}
+
+.randomize-button {
+  font-size: 1.1rem;
 }
 
 /* MODAL */
@@ -280,7 +399,7 @@ body {
 .current-reference-board {
   aspect-ratio: 1;
   background-color: #00485c;
-  padding: 3.5%;
+  padding: 1.5%;
 }
 
 .current-player-board {
