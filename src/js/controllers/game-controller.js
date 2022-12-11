@@ -62,7 +62,7 @@ function displayWinner(player) {
   winningPlayer = player;
   displayButtonModal(
     document.body,
-    `Winner of this match is ${player.username}`,
+    `The winner is ${player.username}`,
     'Restart game',
     () => restartGame(),
   );
@@ -202,6 +202,7 @@ function generateGrid(activeBoardObj, fromPlayer, toPlayer, isBoardAttackable) {
 }
 
 function displayGameBoard(fromPlayer, toPlayer) {
+  if (winningPlayer !== null) return;
   if (!toPlayer.isCpu) {
     displayModal(document.body, `Pass the device to ${fromPlayer.username}`);
   }

@@ -329,6 +329,11 @@ body {
   background-color: rgba(0, 0, 0, 0.8);
   color: white;
   text-align: center;
+
+  animation-name: shake;
+  animation-iteration-count: 1;
+  animation-duration: 0.2s;
+  animation-timing-function: ease-in-out;
 }
 
 .modal-para {
@@ -346,6 +351,11 @@ body {
   border-radius: 0px 0px 25px 25px;
   font-family: inherit;
   font-size: 4vw;
+  cursor: pointer;
+}
+
+.modal-button:hover {
+  background-color: rgba(0, 0, 0, 1);
 }
 
 /* GAME */
