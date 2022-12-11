@@ -1,6 +1,6 @@
 /*
- * @jest-environment jsdom
- */
+@jest-environment jsdom
+*/
 
 import { getPureRandomShipArray, baseShipTypes } from "../../js/controllers/set-ships-controller";
 

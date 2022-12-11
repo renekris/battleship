@@ -179,6 +179,11 @@ function checkPlacedShips() {
   }
 }
 
+function resetAllData() {
+  resetVariableData();
+  playerOneTurn = true;
+}
+
 function resetVariableData() {
   draggableObjects = [];
   gridCells = [];
@@ -252,18 +257,6 @@ function mouseOverlap(e, el1) {
     domRect1.right < e.clientX ||
     domRect1.bottom < e.clientY ||
     domRect1.left > e.clientX
-  );
-}
-
-function elementsOverlap(el1, el2) {
-  const domRect1 = el1.getBoundingClientRect();
-  const domRect2 = el2.getBoundingClientRect();
-
-  return !(
-    domRect1.top > domRect2.bottom ||
-    domRect1.right < domRect2.left ||
-    domRect1.bottom < domRect2.top ||
-    domRect1.left > domRect2.right
   );
 }
 
@@ -342,7 +335,6 @@ function updateGridWithDrop(cellGroupObj, droppedOnCoords) {
       cellGroupObj,
     });
   }
-  console.log(placedShips);
   reDrawGridCells();
 }
 
@@ -447,10 +439,6 @@ function clickContinue(e, playerOne, playerTwo) {
 
 function displaySetShips(playerOne, playerTwo) {
   clearElementChildren(elContainer);
-
-  // todo:
-  // show modal with player name saying who has to place ships
-  // after user agreement, let them place ships with drag & drop
 
   // SHIPS DIV
   const elSetShipsDiv = elContainer.appendChild(document.createElement('div'));
@@ -586,20 +574,8 @@ function setRandomShips(playerObject, hasRandomOrientation = true) {
 }
 
 function initShipPlacement(playerOne, playerTwo) {
+  resetAllData();
   displaySetShips(playerOne, playerTwo);
-  // note to self: comment out past this for dev
-  // setRandomShips(playerOne); // temp
-  // if (playerTwo.isCpu) {
-  //   setRandomShips(playerTwo);
-  // } else {
-  //   // displaySetShips(playerTwo);
-  //   setRandomShips(playerTwo); // temp
-  // }
-
-  // console.log(playerOne);
-  // console.log(playerTwo);
-
-  // initGame(playerOne, playerTwo);
 }
 
 export { initShipPlacement, getPureRandomShipArray, baseShipTypes };

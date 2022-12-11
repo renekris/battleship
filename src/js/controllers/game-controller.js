@@ -1,12 +1,19 @@
 import playerFactory from "../factories/player-factory";
-import { displayModal } from "./modal-controller";
+import { displayButtonModal, displayModal } from "./modal-controller";
+import initDisplay from "./start-menu-controller";
 
 // DOM CACHE
 const elContainer = document.getElementById('container');
 
 // VARIABLES
 const afterAttackDelay = 1300;
-const aiDiscoveredCoordinates = [];
+let aiDiscoveredCoordinates = [];
+let winningPlayer = null;
+
+function resetData() {
+  aiDiscoveredCoordinates = [];
+  winningPlayer = null;
+}
 
 function clearElementChildren(element) {
   while (element.firstChild) {
@@ -34,7 +41,7 @@ function aiMove(playerOne, playerAi) {
   const aiAttackCoords = playerAi.referenceBoard.getAiMove(aiDiscoveredCoordinates);
   playerAi.referenceBoard.receiveAttack(aiAttackCoords);
   const target = playerOne.playerBoard.receiveAttack(aiAttackCoords);
-  console.log(`AI ATTACK:`, aiAttackCoords);
+  // console.log(`AI ATTACK:`, aiAttackCoords);
 
   if (target !== null) {
     aiDiscoveredCoordinates.push(
@@ -46,16 +53,29 @@ function aiMove(playerOne, playerAi) {
   }
 }
 
+function restartGame() {
+  initDisplay();
+}
+
 function displayWinner(player) {
   console.log(`The winner is ${player.username}`);
+  winningPlayer = player;
+  displayButtonModal(
+    document.body,
+    `Winner of this match is ${player.username}`,
+    'Restart game',
+    () => restartGame(),
+  );
 }
 
 function checkWinCondition(playerOne, playerTwo) {
   // with playerOne priority
-  if (playerOne.playerBoard.areShipsSunk()) {
-    displayWinner(playerTwo);
-  } else if (playerTwo.playerBoard.areShipsSunk()) {
-    displayWinner(playerOne);
+  if (winningPlayer === null) {
+    if (playerOne.playerBoard.areShipsSunk()) {
+      displayWinner(playerTwo);
+    } else if (playerTwo.playerBoard.areShipsSunk()) {
+      displayWinner(playerOne);
+    }
   }
 }
 
@@ -105,7 +125,7 @@ function attackTile(e, fromPlayer = playerFactory(), toPlayer = playerFactory())
   removeCellsEnabledStatus();
 
   const attackCoords = { x: parseInt(e.target.dataset.x, 10), y: parseInt(e.target.dataset.y, 10) };
-  console.log(`${fromPlayer.username} ATTACK:`, attackCoords);
+  // console.log(`${fromPlayer.username} ATTACK:`, attackCoords);
   toPlayer.playerBoard.receiveAttack(attackCoords);
   fromPlayer.referenceBoard.receiveAttack(attackCoords);
 
@@ -218,6 +238,7 @@ function displayGameBoard(fromPlayer, toPlayer) {
 }
 
 function initGame(playerOne, playerTwo) {
+  resetData();
   displayGameBoard(playerOne, playerTwo);
 }
 
