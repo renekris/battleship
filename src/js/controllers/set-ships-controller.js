@@ -59,7 +59,7 @@ const baseShipTypes = [
     orientation: 'vertical',
   },
 ];
-let shipTypes = baseShipTypes;
+const shipTypes = baseShipTypes;
 let draggableObjects = [];
 let gridCells = [];
 let placedShips = [];
@@ -74,7 +74,7 @@ class DraggableCellGroup {
     this.offsetX = 0;
     this.offsetY = 0;
     this.elHoveredOnCell = null;
-    this.hoveredCoords = null;
+    this.pastHoveredCoords = null;
 
     this.elCellGroup.addEventListener('pointerdown', (e) => this.dragStart(e), false);
     this.elCellGroup.addEventListener('pointerup', (e) => this.dragEnd(e), false);
@@ -138,9 +138,9 @@ class DraggableCellGroup {
         if (elHoveredOnCell !== this.elHoveredOnCell) {
           this.elHoveredOnCell = elHoveredOnCell;
 
-          updateHoveredGridCells(this.hoveredCoords, this.shipObj.name, true);
+          updateHoveredGridCells(this.pastHoveredCoords, this.shipObj.name, true);
           const hoveredCoords = getDroppedOnCoords(this, elHoveredOnCell);
-          this.hoveredCoords = hoveredCoords;
+          this.pastHoveredCoords = hoveredCoords;
           updateHoveredGridCells(hoveredCoords, this.shipObj.name, false);
         }
       }
@@ -150,7 +150,7 @@ class DraggableCellGroup {
   dragEnd(e) {
     this.isDragging = false;
 
-    updateHoveredGridCells(this.hoveredCoords, this.shipObj.name, true);
+    updateHoveredGridCells(this.pastHoveredCoords, this.shipObj.name, true);
     if (!mouseOverlap(e, elPlaceShipGrid)) {
       this.resetElementPosition();
       if (resetPlacedShip(this.shipObj.name)) {
@@ -166,7 +166,6 @@ class DraggableCellGroup {
 
     this.initialX = this.currentX;
     this.initialY = this.currentY;
-    console.log(draggableObjects);
     checkPlacedShips();
   }
 }
@@ -189,7 +188,6 @@ function resetVariableData() {
   gridCells = [];
   placedShips = [];
   elPlaceShipGrid = null;
-  shipTypes = baseShipTypes;
 }
 
 function randomizeShipTypes() {
@@ -197,9 +195,12 @@ function randomizeShipTypes() {
     const ship = shipTypes[i];
     const shipDirection = getRandomInclusive(0, 1);
     // 0 = vertical || 1 = horizontal
-    if (shipDirection === 1) {
+    if (shipDirection === 1 && ship.orientation === 'vertical') {
       ship.relativeCoords = ship.relativeCoords.map((coords) => [coords[1], coords[0]]);
       ship.orientation = 'horizontal';
+    } else if (shipDirection === 0 && ship.orientation === 'horizontal') {
+      ship.relativeCoords = ship.relativeCoords.map((coords) => [coords[1], coords[0]]);
+      ship.orientation = 'vertical';
     }
   }
 }
@@ -330,9 +331,9 @@ function updateGridWithDrop(cellGroupObj, droppedOnCoords) {
   } else {
     resetOverlappingShips(droppedOnCoords, cellGroupObj.shipObj.name);
     placedShips.push({
-      shipName: cellGroupObj.shipObj.name,
-      coords: droppedOnCoords,
       cellGroupObj,
+      coords: droppedOnCoords,
+      shipName: cellGroupObj.shipObj.name,
     });
   }
   reDrawGridCells();

@@ -214,7 +214,10 @@ function displayGameBoard(fromPlayer, toPlayer) {
   elCurrentPlayerName.textContent = `Attack ${toPlayer.username}'s board!`;
   elCurrentPlayerName.classList.add('game-title');
 
-  const elCurrentReferenceBoard = elGameWindow.appendChild(document.createElement('div'));
+  const elBoards = elGameWindow.appendChild(document.createElement('div'));
+  elBoards.classList.add('game-boards');
+
+  const elCurrentReferenceBoard = elBoards.appendChild(document.createElement('div'));
   elCurrentReferenceBoard.classList.add('current-reference-board');
   elCurrentReferenceBoard.appendChild(
     generateGrid(
@@ -225,7 +228,7 @@ function displayGameBoard(fromPlayer, toPlayer) {
     )
   );
 
-  const elCurrentPlayerBoard = elGameWindow.appendChild(document.createElement('div'));
+  const elCurrentPlayerBoard = elBoards.appendChild(document.createElement('div'));
   elCurrentPlayerBoard.classList.add('current-player-board');
   elCurrentPlayerBoard.appendChild(
     generateGrid(
