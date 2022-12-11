@@ -163,6 +163,7 @@ class DraggableCellGroup {
     const elDroppedOnCell = gridCells.filter((elCell) => mouseOverlap(e, elCell))[0];
     const droppedOnCoords = getDroppedOnCoords(this, elDroppedOnCell);
     updateGridWithDrop(this, droppedOnCoords);
+    this.setElementPositionToCenter(droppedOnCoords);
 
     this.initialX = this.currentX;
     this.initialY = this.currentY;
