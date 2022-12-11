@@ -58,7 +58,7 @@ function restartGame() {
 }
 
 function displayWinner(player) {
-  console.log(`The winner is ${player.username}`);
+  // console.log(`The winner is ${player.username}`);
   winningPlayer = player;
   displayButtonModal(
     document.body,
