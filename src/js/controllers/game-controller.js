@@ -190,19 +190,9 @@ function displayGameBoard(fromPlayer, toPlayer) {
   const elGameWindow = elContainer.appendChild(document.createElement('div'));
   elGameWindow.classList.add('game-area');
 
-  const elCurrentPlayerBoard = elGameWindow.appendChild(document.createElement('div'));
-  elCurrentPlayerBoard.classList.add('current-player-board');
-  elCurrentPlayerBoard.appendChild(
-    generateGrid(
-      fromPlayer.playerBoard,
-      fromPlayer,
-      toPlayer,
-      false
-    ));
-
   const elCurrentPlayerName = elGameWindow.appendChild(document.createElement('p'));
-  elCurrentPlayerName.textContent = `Current turn ${fromPlayer.username}`;
-  elCurrentPlayerName.classList.add('player-name');
+  elCurrentPlayerName.textContent = `Attack ${toPlayer.username}'s board!`;
+  elCurrentPlayerName.classList.add('game-title');
 
   const elCurrentReferenceBoard = elGameWindow.appendChild(document.createElement('div'));
   elCurrentReferenceBoard.classList.add('current-reference-board');
@@ -212,7 +202,19 @@ function displayGameBoard(fromPlayer, toPlayer) {
       fromPlayer,
       toPlayer,
       true
-    ));
+    )
+  );
+
+  const elCurrentPlayerBoard = elGameWindow.appendChild(document.createElement('div'));
+  elCurrentPlayerBoard.classList.add('current-player-board');
+  elCurrentPlayerBoard.appendChild(
+    generateGrid(
+      fromPlayer.playerBoard,
+      fromPlayer,
+      toPlayer,
+      false
+    )
+  );
 }
 
 function initGame(playerOne, playerTwo) {

@@ -456,12 +456,6 @@ function displaySetShips(playerOne, playerTwo) {
   const elSetShipsDiv = elContainer.appendChild(document.createElement('div'));
   elSetShipsDiv.classList.add('set-ships-wrapper');
 
-  // TITLE
-  const elTitle = elSetShipsDiv.appendChild(document.createElement('p'));
-  const username = playerOneTurn ? playerOne.username : playerTwo.username;
-  elTitle.innerHTML = `Place your ships ${username}!`;
-  elTitle.classList.add('set-ship-title');
-
   // SHIP STORAGE
   const elShipStorage = elSetShipsDiv.appendChild(document.createElement('div'));
   elShipStorage.classList.add('ship-storage');
@@ -491,8 +485,14 @@ function displaySetShips(playerOne, playerTwo) {
   elShipGrid.appendChild(generateGrid(10, 10));
 
   // BUTTONS
-  const elButtonDiv = elSetShipsDiv.appendChild(document.createElement('div'));
+  const elButtonDiv = elContainer.appendChild(document.createElement('div'));
   elButtonDiv.classList.add('buttons');
+
+  // TITLE
+  const elTitle = elButtonDiv.appendChild(document.createElement('p'));
+  const username = playerOneTurn ? playerOne.username : playerTwo.username;
+  elTitle.innerHTML = `Place your ships ${username}!`;
+  elTitle.classList.add('set-ship-title');
 
   const elContinue = elButtonDiv.appendChild(document.createElement('button'));
   elContinue.addEventListener('click', (e) => clickContinue(e, playerOne, playerTwo));
