@@ -84,6 +84,7 @@ class DraggableCellGroup {
   resetElementPosition() {
     setTranslate(0, 0, this.elCellGroup);
     [this.offsetX, this.offsetY] = [0, 0];
+    this.pastHoveredCoords = null;
   }
 
   reloadElementPosition() {
@@ -92,6 +93,8 @@ class DraggableCellGroup {
 
   setElementPositionToCenter(shipCoordinates) {
     this.resetElementPosition();
+    if (shipCoordinates === null) return;
+
     this.pastHoveredCoords = shipCoordinates;
     const gridCoordCells = findGridCells(shipCoordinates);
     const cellGroup = {
