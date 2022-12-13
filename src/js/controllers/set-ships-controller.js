@@ -86,8 +86,13 @@ class DraggableCellGroup {
     [this.offsetX, this.offsetY] = [0, 0];
   }
 
+  reloadElementPosition() {
+    this.setElementPositionToCenter(this.pastHoveredCoords);
+  }
+
   setElementPositionToCenter(shipCoordinates) {
     this.resetElementPosition();
+    this.pastHoveredCoords = shipCoordinates;
     const gridCoordCells = findGridCells(shipCoordinates);
     const cellGroup = {
       top: Number.POSITIVE_INFINITY,
@@ -109,8 +114,10 @@ class DraggableCellGroup {
       ((cellGroup.width - rectGroup.width) / 2) + cellGroup.left - rectGroup.left,
       ((cellGroup.height - rectGroup.height) / 2) + cellGroup.top - rectGroup.top
     ];
+
     setTranslate(coords[0], coords[1], this.elCellGroup);
     [this.offsetX, this.offsetY] = coords;
+    window.addEventListener('resize', () => this.reloadElementPosition(), { once: true });
   }
 
   dragStart(e) {
@@ -162,8 +169,8 @@ class DraggableCellGroup {
 
     const elDroppedOnCell = gridCells.filter((elCell) => mouseOverlap(e, elCell))[0];
     const droppedOnCoords = getDroppedOnCoords(this, elDroppedOnCell);
+    this.setElementPositionToCenter(this.pastHoveredCoords);
     updateGridWithDrop(this, droppedOnCoords);
-    this.setElementPositionToCenter(droppedOnCoords);
 
     this.initialX = this.currentX;
     this.initialY = this.currentY;
